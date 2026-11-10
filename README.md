@@ -169,6 +169,7 @@ h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.04e
 .overlay .wrap{padding-block:calc(16px + env(safe-area-inset-top,0px)) calc(40px + env(safe-area-inset-bottom,0px));display:grid;gap:14px}
 .ohead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ohead h2{font-size:28px;flex:1;min-width:0}
+#summary .ohead h2{flex-basis:100%}
 .ohead .confirm{flex-basis:100%}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .tab{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
@@ -332,8 +333,8 @@ const CATS=[{k:"att",name:"Attacco",lv:LV4},{k:"ric",name:"Ricezione",lv:LV4},{k
 const TYPES={
   att:[{k:"a",name:"Attacco",sh:"circle",col:"blue"},{k:"ap",name:"Attacco punto",sh:"star",col:"green"},
        {k:"p",name:"Pallonetto",sh:"tri",col:"orange"},{k:"pp",name:"Pallonetto punto",sh:"diamond",col:"purple"}],
-  dif:[{k:"pa",name:"Presa da attacco",sh:"circle",col:"green"},{k:"na",name:"Non presa da attacco",sh:"cross",col:"red"},
-       {k:"pp",name:"Presa da pallonetto",sh:"tri",col:"blue"},{k:"np",name:"Non presa da pallonetto",sh:"diamond",col:"orange"}]
+  dif:[{k:"pa",name:"Attacco difeso",sh:"circle",col:"green"},{k:"na",name:"Attacco punto",sh:"cross",col:"red"},
+       {k:"pp",name:"Pallonetto difeso",sh:"tri",col:"blue"},{k:"np",name:"Pallonetto punto",sh:"diamond",col:"orange"}]
 };
 const GOODTYPES={att:["ap","pp"],dif:["pa","pp"]};
 const KEY="tabellino-volley-v3";
@@ -514,7 +515,7 @@ function courtInner(k,marks,newIdx=-1){
 function counts(k,marks){const o=Object.fromEntries(TYPES[k].map(t=>[t.k,0]));marks.forEach(m=>{if(m.t in o)o[m.t]++});return o}
 function sumLine(k,marks){
   const c=counts(k,marks),tot=marks.length,g=GOODTYPES[k].reduce((a,t)=>a+c[t],0);
-  return k==="att"?`Punti in attacco: <b>${g}</b> su ${tot} (${pct(g,tot)})`:`Difese prese: <b>${g}</b> su ${tot} (${pct(g,tot)})`;
+  return k==="att"?`Punti in attacco: <b>${g}</b> su ${tot} (${pct(g,tot)})`:`Palloni difesi: <b>${g}</b> su ${tot} (${pct(g,tot)})`;
 }
 function renderCourt(k,newIdx=-1){
   const marks=curSet().marks[k],svg=$("court-"+k);
