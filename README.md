@@ -455,5 +455,3 @@ $("backBtn").onclick=()=>{$("summary").hidden=true};
 
 render();
 </script>
-
-</body></html>
