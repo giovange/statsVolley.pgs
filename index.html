@@ -1,5 +1,6 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Tabellino Pallavolo Condiviso</title>
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>[hidden]{display:none!important}body{margin:0;font-size:14px}img{max-width:100%}</style></head><body>
+<title>Tabellino Pallavolo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap">
@@ -207,6 +208,15 @@ td.pct{font-weight:700}
 td.dim{color:var(--muted)}
 tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
 .gsep{border-left:1px solid var(--line)}
+.gate{position:fixed;inset:0;z-index:60;background:var(--navy);color:var(--navy-fg);display:grid;place-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.gate-box{width:100%;max-width:380px;display:grid;gap:12px}
+.gate h1{font-size:36px}
+.gate p{margin:0;font-size:16px;opacity:.9}
+.gate .olab{color:var(--navy-fg);opacity:.75}
+.gate input{flex:1;min-width:0;padding:12px;border-radius:8px;border:0;font-size:18px;background:var(--surface);color:var(--fg)}
+.gate .btn{background:rgba(255,255,255,.16);color:var(--navy-fg)}
+.gate .btn.primary{background:var(--yellow);color:var(--yellow-fg);font-size:18px;padding:12px}
+.gate .err{color:#ffb4ad}
 .livepill{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.16);color:var(--navy-fg);font-family:var(--display);font-weight:700;letter-spacing:.08em;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .livepill i{width:9px;height:9px;border-radius:50%;background:#2fc46f;box-shadow:0 0 0 3px rgba(47,196,111,.25)}
 .livepill.pending i{background:var(--yellow);box-shadow:0 0 0 3px rgba(245,196,0,.25)}
@@ -247,7 +257,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
       <div class="live-row"><input id="liveCode" placeholder="KMT-482" maxlength="8" autocomplete="off" aria-label="Codice partita"><button class="btn" id="liveJoin">Entra con il codice</button></div>
       <p class="err" id="liveErr" hidden></p>
     </div>
-    <p class="hint" id="liveOff" hidden>La partita condivisa funziona aprendo questa pagina da Claude con il tuo account.</p>
+    <p class="hint" id="liveOff" hidden>La partita condivisa non è disponibile in questo momento: controlla la connessione e ricarica la pagina.</p>
     <p class="boot" id="liveBoot" hidden>Mi ricollego alla partita condivisa…</p></div>
     <p class="hint">Inserisci nome e ruolo di ogni giocatrice. Le righe senza nome vengono ignorate.</p>
     <div class="rows" id="rosterRows"></div>
@@ -369,6 +379,16 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
   </div>
 </section>
 
+<!-- PIN SQUADRA -->
+<div class="gate" id="pinGate" hidden><div class="gate-box">
+  <h1>Tabellino Pallavolo</h1>
+  <p>Scrivi il PIN della squadra per entrare.</p>
+  <label for="pinInput" class="olab">PIN della squadra</label>
+  <div class="live-row"><input id="pinInput" type="password" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn" id="pinShow" type="button">Mostra</button></div>
+  <p class="err" id="pinErr" hidden></p>
+  <button class="btn primary" id="pinGo">Entra</button>
+</div></div>
+
 <!-- PARTITA CONDIVISA -->
 <div class="shade" id="liveShade" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="liveSheetTitle">
   <h2 id="liveSheetTitle">Partita condivisa</h2>
@@ -429,7 +449,7 @@ TYPES.ric=[{k:"rp",name:"Ricezione presa",sh:"circle",col:"green"},{k:"ra",name:
 const GOODTYPES={att:["ap","pp"],dif:["pa","pp"],bat:["ace"],ric:["rp"]};
 const KINDS=["att","dif","bat","ric"],OPP=k=>k==="att"||k==="bat",HASORG=k=>k==="att"||k==="dif";
 const MAPTITLE={att:"Attacchi · campo avversario",dif:"Difese · nostro campo",bat:"Battute · campo avversario",ric:"Ricezioni · nostro campo"};
-const KEY="tabellino-volley-live-demo";
+const KEY="tabellino-volley-v3";
 const blankStats=()=>Object.fromEntries(CATS.map(c=>[c.k,c.lv.map(()=>0)]));
 const newSet=()=>({home:0,away:0,closed:false,stats:{},played:[],marks:{att:[],dif:[],bat:[],ric:[]}});
 function fresh(){
@@ -448,7 +468,7 @@ S.teams=S.teams||{home:"",away:""};S.view=S.view||"players";S.sel={att:"a",dif:"
 const fixBat=sets=>sets.forEach(s=>{s.marks=s.marks||{};KINDS.forEach(k=>s.marks[k]=s.marks[k]||[]);Object.values(s.stats||{}).forEach(o=>{if(o.bat&&o.bat.length===2)o.bat=[0,o.bat[0],o.bat[1]]})});
 fixBat(S.sets);
 S.matchId=S.matchId||("m"+Date.now());
-const AKEY="tabellino-volley-live-demo-archivio";let ARCH=[];try{ARCH=JSON.parse(localStorage.getItem(AKEY))||[]}catch(e){}
+const AKEY="tabellino-volley-archivio";let ARCH=[];try{ARCH=JSON.parse(localStorage.getItem(AKEY))||[]}catch(e){}
 ARCH.forEach(a=>fixBat(a.sets));
 const saveArch=()=>{try{localStorage.setItem(AKEY,JSON.stringify(ARCH))}catch(e){}};
 const save=()=>{if(LIVE){LIVE.saveUI();return}try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -899,7 +919,7 @@ class Live{
   scheduleMeta(){clearTimeout(this.metaTimer);this.metaTimer=setTimeout(()=>this.writeMeta(),2500)}
   async writeMeta(){
     const m=liveMatch(),idx=usedIdx(m);
-    const body={teams:{home:S.teams.home||"",away:S.teams.away||""},sets:idx.map(i=>[m.sets[i].home,m.sets[i].away,m.sets[i].closed?1:0]),date:S.date||null};
+    const body={teams:{home:S.teams.home||"",away:S.teams.away||""},sets:idx.map(i=>({h:m.sets[i].home,a:m.sets[i].away,c:m.sets[i].closed?1:0})),date:S.date||null};
     const j=JSON.stringify(body);if(j===this.metaLast)return;
     try{await DB.doc("partite/"+this.code).update(body);this.metaLast=j}catch(e){}
   }
@@ -982,7 +1002,7 @@ async function loadShared(){
 function renderShared(){
   if(!sharedList.length){$("archList").innerHTML='<p class="empty">Nessuna partita condivisa per ora.</p>';return}
   $("archList").innerHTML=sharedList.map(a=>{
-    const sets=(a.sets||[]).map(x=>({home:x[0],away:x[1],closed:!!x[2]})),fake={teams:a.teams||{},sets},[w,l]=setsWon(fake),cur=LIVE&&LIVE.code===a.code;
+    const sets=(a.sets||[]).map(x=>Array.isArray(x)?{home:x[0],away:x[1],closed:!!x[2]}:{home:x.h,away:x.a,closed:!!x.c}),fake={teams:a.teams||{},sets},[w,l]=setsWon(fake),cur=LIVE&&LIVE.code===a.code;
     return `<article class="arch-item">
       <div class="arch-top"><span class="arch-date">${fmtDate(a.date||a.created)} · <b>${esc(a.code)}</b>${cur?" · in corso qui":""}</span>${sets.some(s=>s.closed)?`<span class="pill ${w===l?"":w>l?"win":"loss"}">${w===l?"Pari":w>l?"Vinta":"Persa"}</span>`:""}</div>
       <div class="arch-res">${nm(fake,"home")} ${w} – ${l} ${nm(fake,"away")}</div>
@@ -1009,10 +1029,77 @@ $("archive").addEventListener("click",async e=>{
     sharedDel=null;sharedList=sharedList.filter(a=>a.code!==code);renderShared()}
 });
 
+/* ---------- FIREBASE (sito pubblicato fuori da Claude) ---------- */
+const FB_CONFIG={apiKey:"AIzaSyCwzTT3dOFPViQ57Ol80u_ZzZLXlv8YUO0",authDomain:"statsvolley-20b26.firebaseapp.com",projectId:"statsvolley-20b26",
+  storageBucket:"statsvolley-20b26.firebasestorage.app",messagingSenderId:"920983360131",appId:"1:920983360131:web:67dbcf924f43f6bb7701b6"};
+const FB_V="13.2.0",PINKEY="tabellino-pin";
+const INCLAUDE=!!(window.claude&&window.claude.use);
+let FB=null;
+async function fbLoad(){
+  if(FB)return FB;
+  const base=`https://www.gstatic.com/firebasejs/${FB_V}/`;
+  const [A,U,F]=await Promise.all([import(base+"firebase-app.js"),import(base+"firebase-auth.js"),import(base+"firebase-firestore.js")]);
+  const app=A.initializeApp(FB_CONFIG),auth=U.getAuth(app);
+  await U.signInAnonymously(auth);
+  FB={F,fs:F.getFirestore(app),uid:auth.currentUser.uid};return FB;
+}
+const fbCode=e=>({"permission-denied":"invalid_argument","unauthenticated":"invalid_argument","invalid-argument":"invalid_argument",
+  "resource-exhausted":"quota_exceeded","unavailable":"unavailable","deadline-exceeded":"unavailable"}[e&&e.code]||"unavailable");
+const fbErr=e=>({code:fbCode(e),message:String(e&&e.message||e)});
+function fbDB(pin){
+  const {F,fs}=FB,pre=`squadre/${pin}/`,clean=d=>JSON.parse(JSON.stringify(d));
+  const wd=d=>({id:d.id,exists:d.exists(),data:()=>d.exists()?d.data():undefined,metadata:d.metadata});
+  const wq=s=>({docs:s.docs.map(wd),size:s.size,empty:s.empty,docChanges:()=>[],metadata:s.metadata});
+  const wrap=async p=>{try{return await p}catch(e){throw fbErr(e)}};
+  const Q=(q,path)=>({path,orderBy:(f,d)=>Q(F.query(q,F.orderBy(f,d||"asc")),path),limit:n=>Q(F.query(q,F.limit(n)),path),
+    get:()=>wrap(F.getDocs(q).then(wq)),
+    onSnapshot:(next,err)=>F.onSnapshot(q,{includeMetadataChanges:true},s=>next(wq(s)),e=>err&&err(fbErr(e))),
+    doc:id=>D(path+"/"+id)});
+  const D=path=>{const r=F.doc(fs,pre+path);return{id:r.id,path,
+    get:()=>wrap(F.getDoc(r).then(wd)),set:d=>wrap(F.setDoc(r,clean(d))),update:d=>wrap(F.updateDoc(r,clean(d))),delete:()=>wrap(F.deleteDoc(r)),
+    onSnapshot:(next,err)=>F.onSnapshot(r,{includeMetadataChanges:true},s=>next(wd(s)),e=>err&&err(fbErr(e))),
+    collection:c=>Q(F.collection(fs,pre+path+"/"+c),path+"/"+c)}};
+  return{doc:D,collection:p=>Q(F.collection(fs,pre+p),p)};
+}
+async function fbCheckPin(pin){
+  const {F,fs}=FB;
+  try{await F.getDoc(F.doc(fs,`squadre/${pin}/check/pin`));return true}
+  catch(e){if(e&&e.code==="permission-denied")return false;throw e}
+}
+function askPin(){
+  return new Promise(resolve=>{
+    $("pinGate").hidden=false;setTimeout(()=>$("pinInput").focus(),50);
+    const go=async()=>{
+      const pin=$("pinInput").value.trim();$("pinErr").hidden=true;
+      if(!pin||/[\/\s]/.test(pin)){$("pinErr").textContent="Scrivi il PIN della squadra, senza spazi.";$("pinErr").hidden=false;return}
+      $("pinGo").disabled=true;$("pinGo").textContent="Controllo…";
+      try{
+        await fbLoad();
+        if(await fbCheckPin(pin)){ls.set(PINKEY,pin);$("pinGate").hidden=true;resolve(pin);return}
+        $("pinErr").textContent="PIN non corretto. Chiedilo a chi gestisce le statistiche della squadra.";
+      }catch(e){$("pinErr").textContent="Non riesco a collegarmi. Controlla la connessione e riprova."}
+      $("pinErr").hidden=false;$("pinGo").disabled=false;$("pinGo").textContent="Entra";
+    };
+    $("pinGo").onclick=go;$("pinInput").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();go()}};
+    $("pinShow").onclick=()=>{const i=$("pinInput");i.type=i.type==="password"?"text":"password";$("pinShow").textContent=i.type==="password"?"Mostra":"Nascondi"};
+  });
+}
+async function firebaseInit(){
+  let pin=ls.get(PINKEY);
+  if(!pin)pin=await askPin();
+  else{
+    try{await fbLoad();if(!(await fbCheckPin(pin))){ls.del(PINKEY);pin=await askPin()}}
+    catch(e){try{await fbLoad()}catch(e2){return null}}
+  }
+  CID=FB.uid;
+  return fbDB(pin);
+}
+if(!INCLAUDE&&!ls.get(PINKEY))$("pinGate").hidden=false;
+
 (async()=>{
   const saved=ls.get(MODEKEY);
   if(saved&&saved.code){$("liveBoot").hidden=false}
-  try{DB=window.claude&&window.claude.use?await window.claude.use("db"):null}catch(e){DB=null}
+  try{DB=INCLAUDE?await window.claude.use("db"):await firebaseInit()}catch(e){DB=null}
   DBREADY=true;
   $("liveBoot").hidden=true;
   if(DB&&saved&&saved.code)liveEnter(saved.code);
