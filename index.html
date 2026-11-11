@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Tabellino Pallavolo</title>
+<title>Tabellino Pallavolo Condiviso</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap">
@@ -105,7 +105,8 @@ h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.04e
 .sets small{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
 .board .btn{background:rgba(255,255,255,.14);color:var(--navy-fg)}
 .board .btn.small{padding:5px 10px;font-size:12px}
-.views{display:flex;gap:4px;background:rgba(255,255,255,.1);border-radius:10px;padding:4px}
+.board .wrap{grid-template-columns:minmax(0,1fr)}
+.views{overflow-x:auto;scrollbar-width:none;display:flex;gap:4px;background:rgba(255,255,255,.1);border-radius:10px;padding:4px}
 .vtab{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:14px;padding:8px 6px;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:7px;color:var(--navy-fg)}
 .vtab[aria-selected="true"]{background:var(--yellow);color:var(--yellow-fg)}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -206,6 +207,16 @@ td.pct{font-weight:700}
 td.dim{color:var(--muted)}
 tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
 .gsep{border-left:1px solid var(--line)}
+.livepill{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.16);color:var(--navy-fg);font-family:var(--display);font-weight:700;letter-spacing:.08em;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.livepill i{width:9px;height:9px;border-radius:50%;background:#2fc46f;box-shadow:0 0 0 3px rgba(47,196,111,.25)}
+.livepill.pending i{background:var(--yellow);box-shadow:0 0 0 3px rgba(245,196,0,.25)}
+.livepill.off i{background:#ff5a4f;box-shadow:0 0 0 3px rgba(255,90,79,.25)}
+.live-card{background:var(--surface);border:2px solid var(--navy);border-radius:12px;padding:12px 14px;display:grid;gap:10px}
+.live-card h3{font-size:18px}
+.live-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.live-row input{flex:1;min-width:0;max-width:200px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg)}
+.codebig{font-family:var(--display);font-weight:800;font-size:46px;letter-spacing:.12em;text-align:center;padding:8px;border-radius:12px;background:var(--bg);font-variant-numeric:tabular-nums;user-select:all}
+.boot{background:var(--yellow);color:var(--yellow-fg);border-radius:10px;padding:10px 12px;font-weight:600;font-size:14px}
 .arch-item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:6px}
 .arch-top{display:flex;align-items:center;gap:8px}
 .arch-date{flex:1;color:var(--muted);font-size:13px;text-transform:capitalize}
@@ -227,8 +238,17 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
 
 <!-- FASE 1: ROSA -->
 <section id="phRoster" hidden>
-  <div class="bar"><div class="wrap"><h1>Rosa della squadra</h1></div></div>
+  <div class="bar"><div class="wrap"><h1>Rosa della squadra</h1><button class="livepill" hidden></button></div></div>
   <div class="wrap content">
+    <div id="liveSlotR"></div><div id="liveBox" style="display:grid;gap:10px"><div class="live-card" id="liveCard" hidden>
+      <h3>Partita condivisa</h3>
+      <p class="hint">Segnate in due sulla stessa partita da telefoni diversi: per esempio una persona sulle giocatrici e una sul campo.</p>
+      <div class="live-row"><button class="btn navy" id="liveCreate">Crea partita condivisa</button></div>
+      <div class="live-row"><input id="liveCode" placeholder="KMT-482" maxlength="8" autocomplete="off" aria-label="Codice partita"><button class="btn" id="liveJoin">Entra con il codice</button></div>
+      <p class="err" id="liveErr" hidden></p>
+    </div>
+    <p class="hint" id="liveOff" hidden>La partita condivisa funziona aprendo questa pagina da Claude con il tuo account.</p>
+    <p class="boot" id="liveBoot" hidden>Mi ricollego alla partita condivisa…</p></div>
     <p class="hint">Inserisci nome e ruolo di ogni giocatrice. Le righe senza nome vengono ignorate.</p>
     <div class="rows" id="rosterRows"></div>
     <div><button class="btn" id="addRow">+ Aggiungi giocatrice</button></div>
@@ -240,12 +260,14 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
 <!-- FASE 2: FORMAZIONE -->
 <section id="phLineup" hidden>
   <div class="bar"><div class="wrap"><h1 id="lineupTitle">Formazione set 1</h1>
+    <button class="livepill" hidden></button>
     <button class="btn" data-undo>↶ Annulla</button>
     <button class="btn" id="editRoster">Modifica rosa</button>
     <button class="btn" data-open-arch>Partite giocate</button>
     <button class="btn primary" id="lineupStats" hidden>Fine partita · Statistiche</button>
   </div></div>
   <div class="wrap content">
+    <div id="liveSlotL"></div>
     <div class="prev" id="prevSet" hidden></div>
     <div class="teamsbox" id="teamsBox">
       <label for="teamHome">La nostra squadra<input id="teamHome" data-team="home" placeholder="Noi"></label>
@@ -260,7 +282,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
 <!-- FASE 3: PARTITA -->
 <section id="phMatch" hidden>
   <header class="board"><div class="wrap">
-    <div class="topline"><span id="setLabel">Set 1</span><span id="setLog"></span><button class="btn small" data-undo>↶ Annulla</button></div>
+    <div class="topline"><span id="setLabel">Set 1</span><span id="setLog"></span><button class="livepill" hidden></button><button class="btn small" data-undo>↶ Annulla</button></div>
     <div class="score">
       <div class="team"><span class="team-name" id="nameHome">Noi</span>
         <div class="pts"><span class="num" id="homePts">0</span><button class="pbtn plus" data-score="home" data-d="1" aria-label="Punto alla nostra squadra">+</button></div></div>
@@ -283,7 +305,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
       <button class="btn" data-open-arch>Partite giocate</button>
       <button class="btn primary" id="matchStats">Fine partita · Statistiche</button>
     </div>
-    <div class="confirm" id="newConfirm" hidden>Nuova partita con la stessa rosa? Questa partita viene salvata in "Partite giocate". <button class="btn danger" id="newYes">Sì, nuova partita</button><button class="btn" id="newNo">No</button></div>
+    <div class="confirm" id="newConfirm" hidden><span class="localonly">Nuova partita con la stessa rosa? Questa partita viene salvata in "Partite giocate".</span><span class="liveonly" hidden>Nuova partita condivisa con la stessa rosa? Avrà un codice nuovo: questa resta tra le partite condivise.</span> <button class="btn danger" id="newYes">Sì, nuova partita</button><button class="btn" id="newNo">No</button></div>
 
     <div id="vPlayers" style="display:grid;gap:12px">
       <p class="hint">Il punteggio va da solo: ++ in attacco o in battuta dà il punto a noi, −− in attacco, ricezione o battuta lo dà all'avversaria. Per gli altri punti (errori avversari, muri, attacchi non difesi) usa + accanto al punteggio della squadra. "Cambio" propone prima le riserve dello stesso ruolo.</p>
@@ -347,6 +369,19 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
   </div>
 </section>
 
+<!-- PARTITA CONDIVISA -->
+<div class="shade" id="liveShade" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="liveSheetTitle">
+  <h2 id="liveSheetTitle">Partita condivisa</h2>
+  <p class="hint" style="max-width:none">Chi vuole segnare con te apre questa stessa pagina da Claude e inserisce il codice in "Entra con il codice". Deve avere il permesso di modificare la pagina: dallo con il pulsante Condividi.</p>
+  <div class="codebig" id="liveSheetCode"></div>
+  <button class="btn navy" id="liveCopy">Copia codice</button>
+  <p id="liveSheetStatus" style="margin:0;font-weight:600"></p>
+  <p class="hint" id="liveSheetDevices" style="margin:0"></p>
+  <p class="hint" style="margin:0;max-width:none">"Annulla" toglie solo la tua ultima azione, mai quella degli altri telefoni.</p>
+  <button class="btn" id="liveExit">Esci dalla partita condivisa</button>
+  <button class="btn" id="liveClose">Chiudi</button>
+</div></div>
+
 <!-- CAMBI -->
 <div class="shade" id="subShade" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="subTitle">
   <h2 id="subTitle">Cambio</h2>
@@ -360,7 +395,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
     <button class="btn navy" id="backBtn">Torna alla partita</button>
     <button class="btn" id="sumArch" data-open-arch>Partite giocate</button>
     <button class="btn primary" id="sumNew">Nuova partita</button>
-    <div class="confirm" id="sumConfirm" hidden>Iniziare una nuova partita con la stessa rosa? Questa partita viene salvata in "Partite giocate".
+    <div class="confirm" id="sumConfirm" hidden><span class="localonly">Iniziare una nuova partita con la stessa rosa? Questa partita viene salvata in "Partite giocate".</span><span class="liveonly" hidden>Iniziare una nuova partita condivisa con la stessa rosa? Avrà un codice nuovo: questa resta tra le partite condivise.</span>
       <button class="btn danger" id="sumYes">Sì, nuova partita</button><button class="btn" id="sumNo">No</button></div>
   </div>
   <div class="tabs" id="tabs" role="tablist"></div>
@@ -373,6 +408,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
 <!-- ARCHIVIO -->
 <section class="overlay" id="archive" hidden><div class="wrap">
   <div class="ohead"><h2>Partite giocate</h2><button class="btn navy" id="archClose">Chiudi</button></div>
+  <div class="tabs" id="archTabs" hidden><button class="tab" data-arch-tab="local">Su questo telefono</button><button class="tab" data-arch-tab="shared">Condivise</button></div>
   <div id="archList" style="display:grid;gap:10px"></div>
 </div></section>
 
@@ -393,7 +429,7 @@ TYPES.ric=[{k:"rp",name:"Ricezione presa",sh:"circle",col:"green"},{k:"ra",name:
 const GOODTYPES={att:["ap","pp"],dif:["pa","pp"],bat:["ace"],ric:["rp"]};
 const KINDS=["att","dif","bat","ric"],OPP=k=>k==="att"||k==="bat",HASORG=k=>k==="att"||k==="dif";
 const MAPTITLE={att:"Attacchi · campo avversario",dif:"Difese · nostro campo",bat:"Battute · campo avversario",ric:"Ricezioni · nostro campo"};
-const KEY="tabellino-volley-v3";
+const KEY="tabellino-volley-live-demo";
 const blankStats=()=>Object.fromEntries(CATS.map(c=>[c.k,c.lv.map(()=>0)]));
 const newSet=()=>({home:0,away:0,closed:false,stats:{},played:[],marks:{att:[],dif:[],bat:[],ric:[]}});
 function fresh(){
@@ -412,10 +448,10 @@ S.teams=S.teams||{home:"",away:""};S.view=S.view||"players";S.sel={att:"a",dif:"
 const fixBat=sets=>sets.forEach(s=>{s.marks=s.marks||{};KINDS.forEach(k=>s.marks[k]=s.marks[k]||[]);Object.values(s.stats||{}).forEach(o=>{if(o.bat&&o.bat.length===2)o.bat=[0,o.bat[0],o.bat[1]]})});
 fixBat(S.sets);
 S.matchId=S.matchId||("m"+Date.now());
-const AKEY="tabellino-volley-archivio";let ARCH=[];try{ARCH=JSON.parse(localStorage.getItem(AKEY))||[]}catch(e){}
+const AKEY="tabellino-volley-live-demo-archivio";let ARCH=[];try{ARCH=JSON.parse(localStorage.getItem(AKEY))||[]}catch(e){}
 ARCH.forEach(a=>fixBat(a.sets));
 const saveArch=()=>{try{localStorage.setItem(AKEY,JSON.stringify(ARCH))}catch(e){}};
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const save=()=>{if(LIVE){LIVE.saveUI();return}try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const tn=k=>esc((S.teams[k]||"").trim()||(k==="home"?"Noi":"Avversari"));
@@ -424,17 +460,41 @@ const roleSort=(a,b)=>(RORDER[byId(a)?.role]??9)-(RORDER[byId(b)?.role]??9);
 const badge=p=>`<span class="role ${RCODE[p.role]||""}" title="${esc(p.role)}">${RCODE[p.role]||"?"}</span>`;
 const pct=(g,t)=>t?Math.round(g/t*100)+"%":"–";
 
+/* ---------- AZIONI ---------- */
+const SETSCOPED=new Set(["lineup","stat","score","sub","mark","closeSet"]);
+function apply(S,a){
+  const set=i=>{while(S.sets.length<=i)S.sets.push(newSet());return S.sets[i]};
+  const has=id=>S.players.some(p=>p.id===id);
+  switch(a.type){
+    case "roster":S.players=a.players.map(p=>({id:p.id,name:p.name,role:p.role}));S.court=S.court.filter(has);if(S.draft)S.draft=S.draft.filter(has);S.phase="lineup";break;
+    case "editRoster":S.phase="roster";break;
+    case "teams":S.teams={home:a.teams.home||"",away:a.teams.away||""};break;
+    case "lineup":{if(a.set!==S.cur)break;S.court=a.court.filter(has);const s=set(a.set);s.played=[...new Set([...s.played,...S.court])];S.phase="match";S.draft=null;if(!S.date)S.date=a.ts;break}
+    case "stat":{const s=set(a.set),st=s.stats[a.p]||(s.stats[a.p]=blankStats());if(!st[a.c]||st[a.c][a.r]===undefined)break;st[a.c][a.r]++;
+      const lv=CATS.find(x=>x.k===a.c).lv[a.r].c,side=lv==="pp"&&(a.c==="att"||a.c==="bat")?"home":lv==="mm"?"away":null;if(side)s[side]++;break}
+    case "score":{const s=set(a.set);if(s[a.side]+a.d>=0)s[a.side]+=a.d;break}
+    case "sub":{if(a.set!==S.cur)break;const i=S.court.indexOf(a.out);if(i<0||S.court.includes(a.in)||!has(a.in))break;S.court[i]=a.in;const s=set(a.set);if(!s.played.includes(a.in))s.played.push(a.in);break}
+    case "mark":{const s=set(a.set);(s.marks[a.k]=s.marks[a.k]||[]).push({x:a.x,d:a.d,t:a.t,...(a.o?{o:a.o}:{})});break}
+    case "closeSet":{if(a.set!==S.cur)break;S.sets[S.cur].closed=true;set(S.cur+1);S.cur++;S.draft=[...S.court];S.phase="lineup";break}
+  }
+}
+function act(a,after=render){
+  a.ts=Date.now();if(SETSCOPED.has(a.type)&&a.set===undefined)a.set=S.cur;
+  if(LIVE){LIVE.push(a);after();return}
+  commit(()=>apply(S,a),after);
+}
+let LIVE=null;
 function snap(){const {hist,...rest}=S;S.hist.push(JSON.stringify(rest));if(S.hist.length>200)S.hist.shift()}
 function commit(fn,after=render){snap();fn();save();after()}
-function undo(){const h=S.hist.pop();if(!h)return;const hist=S.hist;S=JSON.parse(h);S.hist=hist;save();if(ARCH.some(a=>a.id===S.matchId)){ARCH=ARCH.filter(a=>a.id!==S.matchId);saveArch()}closeSub();render()}
-function renderUndo(){document.querySelectorAll("[data-undo]").forEach(b=>b.disabled=!S.hist.length)}
+function undo(){if(LIVE){LIVE.undo();return}const h=S.hist.pop();if(!h)return;const hist=S.hist;S=JSON.parse(h);S.hist=hist;save();if(ARCH.some(a=>a.id===S.matchId)){ARCH=ARCH.filter(a=>a.id!==S.matchId);saveArch()}closeSub();render()}
+function renderUndo(){const n=LIVE?LIVE.mine.length:S.hist.length;document.querySelectorAll("[data-undo]").forEach(b=>{b.disabled=!n;b.title=LIVE?"Annulla la tua ultima azione":""})}
 
 function render(){
   $("phRoster").hidden=S.phase!=="roster";$("phLineup").hidden=S.phase!=="lineup";$("phMatch").hidden=S.phase!=="match";
   if(S.phase==="roster")renderRoster();
   if(S.phase==="lineup")renderLineup();
   if(S.phase==="match")renderMatch();
-  renderUndo();
+  renderUndo();paintLive();
 }
 
 /* ---------- ROSA ---------- */
@@ -449,7 +509,7 @@ function renderRoster(){
   rosterCount();
 }
 function rosterCount(){const n=S.players.filter(p=>p.name.trim()).length;$("rosterCount").textContent=n+(n===1?" giocatrice":" giocatrici")}
-$("addRow").onclick=()=>{S.players.push({id:"p"+(S.nextId++),name:"",role:""});save();renderRoster();$("rn-"+S.players.at(-1).id).focus()};
+$("addRow").onclick=()=>{S.players.push({id:"p"+(Math.max(0,...S.players.map(p=>+String(p.id).slice(1)||0))+1),name:"",role:""});save();renderRoster();$("rn-"+S.players.at(-1).id).focus()};
 $("rosterNext").onclick=()=>{
   const named=S.players.filter(p=>p.name.trim());
   const noRole=named.filter(p=>!p.role);
@@ -457,11 +517,8 @@ $("rosterNext").onclick=()=>{
   if(named.length<6)msg="Servono almeno 6 giocatrici con il nome.";
   else if(noRole.length)msg="Manca il ruolo per: "+noRole.map(p=>p.name.trim()).join(", ")+".";
   $("rosterErr").hidden=!msg;$("rosterErr").textContent=msg;if(msg)return;
-  commit(()=>{
-    S.players=named.map(p=>({...p,name:p.name.trim()}));
-    const ok=id=>!!byId(id);S.court=S.court.filter(ok);S.draft=(S.draft||[]).filter(ok);
-    S.phase="lineup";
-  });
+  act({type:"roster",players:named.map(p=>({id:p.id,name:p.name.trim(),role:p.role}))});
+  if(LIVE)LIVE.ui.rdraft=null;
   scrollTo(0,0);
 };
 
@@ -473,7 +530,7 @@ function renderLineup(){
   $("prevSet").hidden=!prev;
   if(prev)$("prevSet").innerHTML=`Set ${S.cur} chiuso: ${tn("home")} ${prev.home} – ${prev.away} ${tn("away")}`;
   $("teamsBox").hidden=S.cur>0;
-  $("teamHome").value=S.teams.home;$("teamAway").value=S.teams.away;
+  if(document.activeElement!==$("teamHome"))$("teamHome").value=S.teams.home;if(document.activeElement!==$("teamAway"))$("teamAway").value=S.teams.away;
   $("lineupStats").hidden=S.cur===0;
   $("editRoster").hidden=S.cur>0;
   $("lineupGroups").innerHTML=ROLES.map(([r])=>{
@@ -485,12 +542,8 @@ function renderLineup(){
   $("lineupCount").textContent=`${n}/6 in campo`+(lib?` + ${lib} libero`:"");
   $("lineupGo").disabled=!(n===6&&lib<=2);
 }
-$("lineupGo").onclick=()=>{commit(()=>{
-  S.court=[...S.draft].sort(roleSort);
-  const s=S.sets[S.cur];s.played=[...new Set([...s.played,...S.court])];
-  S.phase="match";S.draft=null;if(!S.date)S.date=Date.now();
-});scrollTo(0,0)};
-$("editRoster").onclick=()=>commit(()=>{S.phase="roster"});
+$("lineupGo").onclick=()=>{act({type:"lineup",court:[...S.draft].sort(roleSort)});if(LIVE)LIVE.ui.draft=null;scrollTo(0,0)};
+$("editRoster").onclick=()=>act({type:"editRoster"});
 $("lineupStats").onclick=openSummary;
 
 /* ---------- PARTITA ---------- */
@@ -532,10 +585,10 @@ function renderScore(){
   $("closeSet").disabled=!(s.home||s.away);
   renderUndo();
 }
-$("closeSet").onclick=()=>commit(()=>{curSet().closed=true;S.sets.push(newSet());S.cur++;S.draft=[...S.court];S.phase="lineup"});
+$("closeSet").onclick=()=>act({type:"closeSet"});
 $("newMatch").onclick=()=>{$("newConfirm").hidden=false};
 $("newNo").onclick=()=>{$("newConfirm").hidden=true};
-function startNewMatch(){archiveCurrent();commit(()=>{S.matchId="m"+Date.now();S.date=null;S.sets=[newSet()];S.cur=0;S.draft=[...(S.court.length?S.court:S.draft||[])];S.court=[];S.view="players";S.phase="lineup"});scrollTo(0,0)}
+function startNewMatch(){if(LIVE){LIVE.newMatch();return}archiveCurrent();commit(()=>{S.matchId="m"+Date.now();S.date=null;S.sets=[newSet()];S.cur=0;S.draft=[...(S.court.length?S.court:S.draft||[])];S.court=[];S.view="players";S.phase="lineup"});scrollTo(0,0)}
 $("newYes").onclick=()=>{$("newConfirm").hidden=true;startNewMatch()};
 $("matchStats").onclick=openSummary;
 
@@ -596,11 +649,12 @@ function otab(k,marks){
 const orgBtns=(k)=>[...ORIG,"?"].map(o=>`<button class="ob" data-orgbtn="${k}:${o}" aria-pressed="${S.org[k]===o}" title="${o==="?"?"Zona non vista":"Posto "+o}">${o}</button>`).join("");
 const fltBtns=(k,cur,attr)=>[["all","Tutti"],...ORIG.map(o=>[o,o])].map(([v,l])=>`<button class="ob f" data-${attr}="${k}:${v}" aria-pressed="${cur===v}">${l}</button>`).join("");
 function counts(k,marks){const o=Object.fromEntries(TYPES[k].map(t=>[t.k,0]));marks.forEach(m=>{if(m.t in o)o[m.t]++});return o}
+const SUMLAB={att:"Punti in attacco",dif:"Palloni difesi",bat:"Ace",ric:"Ricezioni prese"};
 function sumLine(k,marks,flt="all"){
   if(flt!=="all")marks=marks.filter(m=>m.o===flt);
   const pre=flt==="all"?"":`Da posto ${flt} · `;
   const c=counts(k,marks),tot=marks.length,g=GOODTYPES[k].reduce((a,t)=>a+c[t],0);
-  return pre+`${{att:"Punti in attacco",dif:"Palloni difesi",bat:"Ace",ric:"Ricezioni prese"}[k]}: <b>${g}</b> su ${tot} (${pct(g,tot)})`;
+  return pre+`${SUMLAB[k]}: <b>${g}</b> su ${tot} (${pct(g,tot)})`;
 }
 function renderCourt(k,newIdx=-1){
   const marks=curSet().marks[k],svg=$("court-"+k);
@@ -615,7 +669,7 @@ function courtClick(svg,e){
   const p=pt.matrixTransform(svg.getScreenCTM().inverse()),x=p.x,d=fromY(k,p.y);
   if(d<0||d>10.5||x<-1.5||x>10.5)return;
   const h=HASORG(k);if(h&&S.flt[k]!=="all"&&S.flt[k]!==S.org[k])S.flt[k]="all";
-  commit(()=>{curSet().marks[k].push({x:+x.toFixed(2),d:+d.toFixed(2),t:S.sel[k],...(h?{o:S.org[k]}:{})})},()=>{renderCourt(k,curSet().marks[k].length-1);renderUndo()});
+  act({type:"mark",k,x:+x.toFixed(2),d:+d.toFixed(2),t:S.sel[k],...(h?{o:S.org[k]}:{})},()=>{renderCourt(k,curSet().marks[k].length-1);renderUndo()});
 }
 
 /* ---------- CAMBI ---------- */
@@ -641,9 +695,8 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("subShade").h
 document.addEventListener("click",e=>{
   const t=e.target.closest(".tap");
   if(t){const id=t.dataset.p,c=t.dataset.c,r=+t.dataset.r;
-    const lv=CATS.find(x=>x.k===c).lv[r].c;
-    const side=lv==="pp"&&(c==="att"||c==="bat")?"home":lv==="mm"?"away":null;
-    commit(()=>{stOf(id)[c][r]++;if(side)curSet()[side]++},()=>{updateCard(id);renderScore();if(side)bump(side);t.classList.remove("flash");void t.offsetWidth;t.classList.add("flash")});return}
+    const before=[curSet().home,curSet().away];
+    act({type:"stat",p:id,c,r},()=>{updateCard(id);renderScore();if(curSet().home>before[0])bump("home");if(curSet().away>before[1])bump("away");t.classList.remove("flash");void t.offsetWidth;t.classList.add("flash")});return}
   const og=e.target.closest("[data-org],[data-orgbtn]");
   if(og){const [k,v]=(og.dataset.org||og.dataset.orgbtn).split(":");S.org[k]=v;save();renderCourt(k);return}
   const fl=e.target.closest("[data-flt]");if(fl){const [k,v]=fl.dataset.flt.split(":");S.flt[k]=v;save();renderCourt(k);return}
@@ -653,11 +706,11 @@ document.addEventListener("click",e=>{
   if(ty){const [k,v]=ty.dataset.type.split(":");S.sel[k]=v;save();renderCourt(k);return}
   const vt=e.target.closest("[data-view]");if(vt){S.view=vt.dataset.view;save();renderMatch();return}
   const sc=e.target.closest("[data-score]");
-  if(sc){const side=sc.dataset.score,d=+sc.dataset.d;if(curSet()[side]+d<0)return;commit(()=>{curSet()[side]+=d},()=>{renderScore();bump(side)});return}
+  if(sc){const side=sc.dataset.score,d=+sc.dataset.d;if(curSet()[side]+d<0)return;act({type:"score",side,d},()=>{renderScore();bump(side)});return}
   const sb=e.target.closest("[data-sub]");if(sb){openSub(sb.dataset.sub);return}
   const inn=e.target.closest("[data-in]");
   if(inn&&subOut){const out=subOut,id=inn.dataset.in;closeSub();
-    commit(()=>{S.court[S.court.indexOf(out)]=id;const s=curSet();if(!s.played.includes(id))s.played.push(id)});return}
+    act({type:"sub",out,in:id});return}
   const pk=e.target.closest("[data-pick]");
   if(pk){const id=pk.dataset.pick,i=S.draft.indexOf(id);i<0?S.draft.push(id):S.draft.splice(i,1);save();renderLineup();
     document.querySelector(`[data-pick="${id}"]`)?.focus();return}
@@ -666,9 +719,9 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-undo]"))undo();
 });
 document.addEventListener("input",e=>{
-  const tm=e.target.dataset.team;if(tm){S.teams[tm]=e.target.value;save();return}
+  const tm=e.target.dataset.team;if(tm){S.teams[tm]=e.target.value;if(!LIVE)save();return}
   const r=e.target.dataset.rid;if(!r)return;const p=byId(r);if(p){p[e.target.dataset.f]=e.target.value;save();rosterCount()}});
-document.addEventListener("change",e=>{const r=e.target.dataset.rid;if(!r)return;const p=byId(r);if(p){p[e.target.dataset.f]=e.target.value;save()}});
+document.addEventListener("change",e=>{if(LIVE&&e.target.dataset.team){act({type:"teams",teams:{...S.teams}},()=>renderScore());return}const r=e.target.dataset.rid;if(!r)return;const p=byId(r);if(p){p[e.target.dataset.f]=e.target.value;save()}});
 
 /* ---------- STATISTICHE ---------- */
 let tab="tot",M=null,fromArch=false;const sumFlt={att:"all",dif:"all"};
@@ -743,8 +796,11 @@ function archiveCurrent(){
   const entry={id:S.matchId,date:S.date||Date.now(),teams:{...S.teams},players:S.players.map(p=>({id:p.id,name:p.name,role:p.role})),sets};
   ARCH=ARCH.filter(a=>a.id!==entry.id);ARCH.unshift(entry);saveArch();
 }
-function openArchive(){delId=null;renderArchive();$("summary").hidden=true;$("archive").hidden=false;$("archive").scrollTop=0}
+let archMode="local";
+function openArchive(){delId=null;sharedDel=null;archMode=LIVE?"shared":"local";renderArchive();$("summary").hidden=true;$("archive").hidden=false;$("archive").scrollTop=0}
 function renderArchive(){
+  $("archTabs").hidden=!DB;document.querySelectorAll("[data-arch-tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.archTab===archMode));
+  if(archMode==="shared"&&DB){loadShared();return}
   if(!ARCH.length){$("archList").innerHTML='<p class="empty">Nessuna partita salvata. Una partita finisce qui quando ne inizi una nuova.</p>';return}
   $("archList").innerHTML=ARCH.map(a=>{const [w,l]=setsWon(a),win=w>l;
     return `<article class="arch-item">
@@ -763,8 +819,205 @@ $("archive").addEventListener("click",e=>{
   if(e.target.closest("[data-arch-delno]")){delId=null;renderArchive()}
 });
 $("archClose").onclick=()=>{$("archive").hidden=true};
+$("archTabs").addEventListener("click",e=>{const b=e.target.closest("[data-arch-tab]");if(b){archMode=b.dataset.archTab;renderArchive()}});
 document.addEventListener("click",e=>{if(e.target.closest("[data-open-arch]"))openArchive()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("archive").hidden)$("archive").hidden=true});
+
+/* ---------- PARTITA CONDIVISA ---------- */
+const MODEKEY="tabellino-live-mode",UIKEY="tabellino-live-ui",CIDKEY="tabellino-live-client";
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let DB=null,DBREADY=false;
+let CID=ls.get(CIDKEY);if(!CID){CID="d"+Math.random().toString(36).slice(2,10);ls.set(CIDKEY,CID)}
+const LETTERS="ABCDEFGHJKLMNPQRSTUVWXYZ",DIGITS="23456789";
+const newCode=()=>Array.from({length:3},()=>LETTERS[Math.floor(Math.random()*LETTERS.length)]).join("")+"-"+Array.from({length:3},()=>DIGITS[Math.floor(Math.random()*DIGITS.length)]).join("");
+const normCode=v=>{const c=String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");return c.length===6?c.slice(0,3)+"-"+c.slice(3):null};
+const cmpA=(a,b)=>a.ts-b.ts||(a.by<b.by?-1:a.by>b.by?1:0)||a.n-b.n;
+const UIFIELDS=["view","sel","org","flt"];
+function foldMatch(actions){
+  const T={...fresh(),players:[],phase:"roster",court:[],draft:null,hist:[]};
+  actions.slice().sort(cmpA).forEach(a=>{try{apply(T,a)}catch(e){}});
+  return T;
+}
+class Live{
+  constructor(code){
+    this.code=code;this.mine=ls.get("tabellino-live-log-"+code)||[];this.others={};this.devices=new Set();
+    this.ui=ls.get(UIKEY)||{};this.status="wait";this.writing=false;this.dirty=false;this.confirmed=false;this.unsub=null;this.metaLast="";this.metaTimer=null;
+  }
+  get logRef(){return DB.doc(`partite/${this.code}/log/${CID}`)}
+  start(){
+    this.timer=setTimeout(()=>{if(!this.confirmed){this.status="off";paintLive()}},10000);
+    this.unsub=DB.collection(`partite/${this.code}/log`).onSnapshot(snap=>{
+      const others={},devs=new Set();
+      snap.docs.forEach(d=>{const v=d.data()||{};devs.add(d.id);
+        if(d.id===CID){const remote=Array.isArray(v.actions)?v.actions:[];if(remote.length>this.mine.length&&!this.writing){this.mine=remote.map(x=>({...x}));this.backup()}}
+        else others[d.id]=Array.isArray(v.actions)?v.actions:[]});
+      this.others=others;this.devices=devs;
+      if(!snap.metadata.fromCache){this.confirmed=true;clearTimeout(this.timer);if(this.status!=="pending"&&this.status!=="err")this.status="ok"}
+      this.derive(true);
+    },err=>{this.status="off";paintLive()});
+    this.derive(false);
+  }
+  stop(){if(this.unsub)this.unsub();clearTimeout(this.timer);clearTimeout(this.metaTimer)}
+  all(){return[...Object.values(this.others).flat(),...this.mine]}
+  derive(remote){
+    const prev=S&&S.sets?[curSet().home,curSet().away,S.phase,S.cur]:null;
+    const T=foldMatch(this.all());
+    UIFIELDS.forEach(f=>{if(this.ui[f]!==undefined)T[f]=this.ui[f]});
+    T.sel={att:"a",dif:"pa",bat:"ace",ric:"rp",...(T.sel||{})};T.org=T.org||{att:"4",dif:"4"};T.flt=T.flt||{att:"all",dif:"all"};T.view=T.view||"players";
+    if(T.phase==="roster"){if(!this.ui.rdraft)this.ui.rdraft=(T.players.length?T.players:fresh().players).map(p=>({...p}));T.players=this.ui.rdraft}
+    else this.ui.rdraft=null;
+    if(T.phase==="lineup"){if(!this.ui.draft||this.ui.draftSet!==T.cur){this.ui.draft=[...T.court];this.ui.draftSet=T.cur}T.draft=this.ui.draft}
+    else this.ui.draft=null;
+    S=T;
+    if(remote){
+      const typing=S.phase==="roster"&&$("phRoster").contains(document.activeElement);
+      if(!typing)render();else rosterCount();
+      if(prev&&prev[3]===S.cur){if(curSet().home>prev[0])bump("home");if(curSet().away>prev[1])bump("away")}
+      if(!$("summary").hidden&&!fromArch){M=liveMatch();renderSummary()}
+    }
+    paintLive();
+  }
+  push(a){
+    a.by=CID;a.n=(this.mine.length?this.mine[this.mine.length-1].n+1:0);this.mine.push(a);
+    this.backup();this.derive(false);this.flush();this.scheduleMeta();
+  }
+  undo(){if(!this.mine.length)return;this.mine.pop();this.backup();closeSub();this.derive(false);render();this.flush();this.scheduleMeta()}
+  backup(){ls.set("tabellino-live-log-"+this.code,this.mine)}
+  saveUI(){UIFIELDS.forEach(f=>this.ui[f]=S[f]);ls.set(UIKEY,{view:this.ui.view,sel:this.ui.sel,org:this.ui.org,flt:this.ui.flt})}
+  async flush(){
+    if(this.writing){this.dirty=true;return}
+    this.writing=true;this.status="pending";paintLive();
+    let ok=true;
+    do{this.dirty=false;
+      try{await this.logRef.set({client:CID,actions:this.mine,updated:Date.now()})}
+      catch(e){ok=false;this.status=e&&e.code==="quota_exceeded"?"full":"err";paintLive();
+        if(e&&(e.code==="invalid_argument"||e.code==="revoked")){this.status="ro";paintLive();this.writing=false;return}
+        this.writing=false;setTimeout(()=>this.flush(),4000);return}
+    }while(this.dirty);
+    this.writing=false;if(ok){this.status=this.confirmed?"ok":"wait";paintLive()}
+  }
+  scheduleMeta(){clearTimeout(this.metaTimer);this.metaTimer=setTimeout(()=>this.writeMeta(),2500)}
+  async writeMeta(){
+    const m=liveMatch(),idx=usedIdx(m);
+    const body={teams:{home:S.teams.home||"",away:S.teams.away||""},sets:idx.map(i=>[m.sets[i].home,m.sets[i].away,m.sets[i].closed?1:0]),date:S.date||null};
+    const j=JSON.stringify(body);if(j===this.metaLast)return;
+    try{await DB.doc("partite/"+this.code).update(body);this.metaLast=j}catch(e){}
+  }
+  async newMatch(){
+    const players=S.players.map(p=>({id:p.id,name:p.name,role:p.role})),home=S.teams.home;
+    await liveCreate(players,{home,away:""});
+  }
+}
+function paintLive(){
+  const on=!!LIVE;
+  document.querySelectorAll(".livepill").forEach(el=>{el.hidden=!on;if(!on)return;
+    el.className="livepill "+({ok:"ok",pending:"pending",wait:"pending"}[LIVE.status]||"off");
+    el.innerHTML=`<i></i>${LIVE.code}`;el.title=liveStatusText()});
+  if($("liveSheetStatus")&&on){$("liveSheetStatus").textContent=liveStatusText();$("liveSheetCode").textContent=LIVE.code;
+    const n=new Set([...LIVE.devices,...(LIVE.mine.length?[CID]:[])]).size;
+    $("liveSheetDevices").textContent=n<=1?"Per ora segna solo questo telefono.":`${n} telefoni hanno segnato in questa partita.`}
+  const slot=S.phase==="roster"?$("liveSlotR"):S.phase==="lineup"&&S.cur===0&&!usedIdx(liveMatch()).length?$("liveSlotL"):null;
+  if(slot&&$("liveBox").parentNode!==slot)slot.appendChild($("liveBox"));$("liveBox").hidden=!slot;
+  $("liveCard").hidden=on||!DB;$("liveOff").hidden=!DBREADY||!!DB||on;
+  document.querySelectorAll(".liveonly").forEach(el=>el.hidden=!on);
+  document.querySelectorAll(".localonly").forEach(el=>el.hidden=on);
+}
+function liveStatusText(){
+  if(!LIVE)return"";
+  return {ok:"Collegato: le azioni arrivano a tutti i telefoni.",pending:"Invio in corso…",wait:"Collegamento in corso…",
+    off:"Non collegato: controlla la connessione. Le tue azioni restano su questo telefono e partono appena torna la rete.",
+    err:"Invio non riuscito, riprovo tra qualche secondo.",full:"Spazio esaurito nell'archivio condiviso: elimina qualche vecchia partita.",
+    ro:"Puoi vedere la partita ma non segnare: chiedi a chi ha creato la pagina di darti il permesso di modificarla."}[LIVE.status]||"";
+}
+async function liveCreate(players,teams){
+  const code=newCode();
+  try{await DB.doc("partite/"+code).set({code,created:Date.now(),by:CID,teams:{home:teams.home||"",away:teams.away||""},sets:[],date:null})}
+  catch(e){showLiveErr(e&&e.code==="invalid_argument"?"Non hai il permesso di creare partite condivise su questa pagina.":"Non riesco a creare la partita. Controlla la connessione e riprova.");return}
+  liveEnter(code);
+  const ok=players.filter(p=>p.name&&p.name.trim()&&p.role);
+  if(teams.home||teams.away)act({type:"teams",teams});
+  if(ok.length>=6)act({type:"roster",players:ok.map(p=>({id:p.id,name:p.name.trim(),role:p.role}))});
+  else if(LIVE){LIVE.ui.rdraft=players.map(p=>({...p}));LIVE.derive(false);render()}
+  openLiveSheet();
+}
+function liveEnter(code){
+  if(LIVE)LIVE.stop();
+  LIVE=new Live(code);ls.set(MODEKEY,{code});closeSub();$("summary").hidden=true;$("archive").hidden=true;
+  LIVE.start();render();scrollTo(0,0);
+}
+async function liveJoin(raw){
+  const code=normCode(raw);if(!code){showLiveErr("Il codice è fatto di 3 lettere e 3 numeri, per esempio KMT-482.");return}
+  $("liveJoin").disabled=true;
+  try{const d=await DB.doc("partite/"+code).get();
+    if(!d.exists){showLiveErr("Non trovo nessuna partita con il codice "+code+". Controlla di averlo scritto giusto.");return}
+    liveEnter(code);
+  }catch(e){showLiveErr("Non riesco a raggiungere l'archivio condiviso. Controlla la connessione e riprova.")}
+  finally{$("liveJoin").disabled=false}
+}
+function liveLeave(){
+  if(LIVE)LIVE.stop();LIVE=null;ls.del(MODEKEY);$("liveShade").hidden=true;
+  try{S=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){S=fresh()}
+  S.sel={att:"a",dif:"pa",bat:"ace",ric:"rp",...(S.sel||{})};S.org=S.org||{att:"4",dif:"4"};S.flt=S.flt||{att:"all",dif:"all"};S.hist=S.hist||[];S.view=S.view||"players";fixBat(S.sets);
+  render();paintLive();scrollTo(0,0);
+}
+function showLiveErr(m){$("liveErr").textContent=m;$("liveErr").hidden=false}
+function openLiveSheet(){paintLive();$("liveShade").hidden=false;$("liveCopy").textContent="Copia codice"}
+$("liveCreate").onclick=()=>{$("liveErr").hidden=true;liveCreate(S.players,S.teams)};
+$("liveJoin").onclick=()=>{$("liveErr").hidden=true;liveJoin($("liveCode").value)};
+$("liveCode").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("liveJoin").click()}});
+document.addEventListener("click",e=>{if(e.target.closest(".livepill"))openLiveSheet()});
+$("liveClose").onclick=()=>{$("liveShade").hidden=true};
+$("liveShade").addEventListener("click",e=>{if(e.target===$("liveShade"))$("liveShade").hidden=true});
+$("liveExit").onclick=liveLeave;
+$("liveCopy").onclick=()=>{const t="Codice partita: "+LIVE.code;
+  navigator.clipboard.writeText(t).then(()=>{$("liveCopy").textContent="Copiato"},()=>{const r=document.createRange();r.selectNodeContents($("liveSheetCode"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r)})};
+
+/* archivio condiviso */
+let sharedList=null,sharedDel=null;
+async function loadShared(){
+  $("archList").innerHTML='<p class="empty">Carico le partite condivise…</p>';
+  try{const q=await DB.collection("partite").orderBy("created","desc").limit(60).get();sharedList=q.docs.map(d=>({...d.data(),code:d.id}));renderShared()}
+  catch(e){$("archList").innerHTML='<p class="empty">Non riesco a caricare le partite condivise. Controlla la connessione e riprova.</p>'}
+}
+function renderShared(){
+  if(!sharedList.length){$("archList").innerHTML='<p class="empty">Nessuna partita condivisa per ora.</p>';return}
+  $("archList").innerHTML=sharedList.map(a=>{
+    const sets=(a.sets||[]).map(x=>({home:x[0],away:x[1],closed:!!x[2]})),fake={teams:a.teams||{},sets},[w,l]=setsWon(fake),cur=LIVE&&LIVE.code===a.code;
+    return `<article class="arch-item">
+      <div class="arch-top"><span class="arch-date">${fmtDate(a.date||a.created)} · <b>${esc(a.code)}</b>${cur?" · in corso qui":""}</span>${sets.some(s=>s.closed)?`<span class="pill ${w===l?"":w>l?"win":"loss"}">${w===l?"Pari":w>l?"Vinta":"Persa"}</span>`:""}</div>
+      <div class="arch-res">${nm(fake,"home")} ${w} – ${l} ${nm(fake,"away")}</div>
+      <div class="arch-sets">${sets.length?sets.map(s=>s.home+"–"+s.away).join(" · "):"Non ancora iniziata"}</div>
+      <div class="arch-act">${sharedDel===a.code?
+        `<span>Eliminare questa partita per tutti?</span><button class="btn danger" data-sh-delyes="${a.code}">Sì, elimina</button><button class="btn" data-sh-delno>No</button>`:
+        `${cur?"":`<button class="btn primary" data-sh-open="${a.code}">Apri e segna</button>`}<button class="btn navy" data-sh-view="${a.code}">Vedi statistiche</button><button class="btn" data-sh-del="${a.code}">Elimina</button>`}</div>
+    </article>`}).join("");
+}
+async function sharedMatch(code){
+  const meta=sharedList.find(a=>a.code===code)||{};
+  const q=await DB.collection(`partite/${code}/log`).get();
+  const T=foldMatch(q.docs.flatMap(d=>(d.data()||{}).actions||[]));
+  return {teams:T.teams,sets:T.sets,players:T.players,date:T.date||meta.created};
+}
+$("archive").addEventListener("click",async e=>{
+  const o=e.target.closest("[data-sh-open]");if(o){liveEnter(o.dataset.shOpen);return}
+  const v=e.target.closest("[data-sh-view]");if(v){try{openSummary(await sharedMatch(v.dataset.shView),true)}catch(err){$("archList").insertAdjacentHTML("afterbegin",'<p class="err">Non riesco a leggere questa partita adesso.</p>')}return}
+  const d=e.target.closest("[data-sh-del]");if(d){sharedDel=d.dataset.shDel;renderShared();return}
+  if(e.target.closest("[data-sh-delno]")){sharedDel=null;renderShared();return}
+  const y=e.target.closest("[data-sh-delyes]");if(y){const code=y.dataset.shDelyes;
+    try{const q=await DB.collection(`partite/${code}/log`).get();for(const doc of q.docs)await DB.doc(`partite/${code}/log/${doc.id}`).delete();await DB.doc("partite/"+code).delete();
+      ls.del("tabellino-live-log-"+code);if(LIVE&&LIVE.code===code)liveLeave()}catch(err){}
+    sharedDel=null;sharedList=sharedList.filter(a=>a.code!==code);renderShared()}
+});
+
+(async()=>{
+  const saved=ls.get(MODEKEY);
+  if(saved&&saved.code){$("liveBoot").hidden=false}
+  try{DB=window.claude&&window.claude.use?await window.claude.use("db"):null}catch(e){DB=null}
+  DBREADY=true;
+  $("liveBoot").hidden=true;
+  if(DB&&saved&&saved.code)liveEnter(saved.code);
+  paintLive();
+})();
 
 render();
 </script>
