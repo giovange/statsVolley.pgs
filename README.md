@@ -93,17 +93,20 @@ h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.04e
 .team{display:grid;gap:4px;justify-items:center;min-width:0}
 .team-name{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pts{display:flex;align-items:center;gap:8px}
+.pts .num.bump{animation:bump .45s ease-out}
+@keyframes bump{0%{transform:scale(1.35);color:var(--yellow)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.pts .num.bump{animation:none}}
 .pts .num{font-family:var(--display);font-weight:800;font-size:46px;line-height:1;min-width:2ch;text-align:center;font-variant-numeric:tabular-nums}
 .pbtn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);font-size:22px;font-weight:600;display:grid;place-items:center;color:var(--navy-fg)}
 .pbtn.plus{background:var(--yellow);color:var(--yellow-fg)}
 .sets{font-family:var(--display);text-align:center;display:grid;gap:2px}
 .sets .big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
-@media (max-width:440px){.score{gap:4px}.pts{gap:4px}.pts .num{font-size:38px}.pbtn{width:32px;height:32px;font-size:19px}.sets .big{font-size:22px}}
+@media (max-width:440px){.vtab{font-size:12.5px;letter-spacing:0;padding:8px 3px}.score{gap:4px}.pts{gap:4px}.pts .num{font-size:38px}.pbtn{width:32px;height:32px;font-size:19px}.sets .big{font-size:22px}}
 .sets small{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
 .board .btn{background:rgba(255,255,255,.14);color:var(--navy-fg)}
 .board .btn.small{padding:5px 10px;font-size:12px}
-.views{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:rgba(255,255,255,.1);border-radius:10px;padding:4px}
-.vtab{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:15px;padding:8px 4px;border-radius:7px;color:var(--navy-fg)}
+.views{display:flex;gap:4px;background:rgba(255,255,255,.1);border-radius:10px;padding:4px}
+.vtab{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:14px;padding:8px 6px;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:7px;color:var(--navy-fg)}
 .vtab[aria-selected="true"]{background:var(--yellow);color:var(--yellow-fg)}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .actions .primary{margin-left:auto}
@@ -122,7 +125,7 @@ h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.04e
 .cname{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cname em{font-style:normal;font-weight:500;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
 .lv{display:grid;gap:5px}
-.lv4{grid-template-columns:repeat(4,1fr)}.lv2{grid-template-columns:repeat(2,1fr)}
+.lv4{grid-template-columns:repeat(4,1fr)}.lv3{grid-template-columns:repeat(3,1fr)}
 .tap{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:10px 8px;border-radius:8px;font-weight:700;font-variant-numeric:tabular-nums;transition:transform .08s;min-width:0}
 .tap:active{transform:scale(.95)}
 .tap .s{font-family:var(--display);font-size:19px;font-weight:800;letter-spacing:-.02em}
@@ -137,10 +140,23 @@ h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.04e
 .benchline{color:var(--muted);font-size:13px}
 
 /* Campo */
-.courtview{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:16px;align-items:start}
-@media (max-width:680px){.courtview{grid-template-columns:1fr}}
-.courtview .side{display:grid;gap:10px}
-@media (max-width:680px){.courtview .side{order:-1}}
+.courtview{display:grid;grid-template-columns:minmax(0,1fr) 270px;grid-template-areas:"court ctl" "court info";gap:12px 16px;align-items:start}
+.cv-ctl{grid-area:ctl;display:grid;gap:10px}.cv-court{grid-area:court;min-width:0}.cv-info{grid-area:info;display:grid;gap:10px}
+@media (max-width:680px){.courtview{grid-template-columns:1fr;grid-template-areas:"ctl" "court" "info"}}
+.orow{display:grid;gap:5px}
+.olab{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:var(--muted)}
+.obtns{display:flex;flex-wrap:wrap;gap:6px}
+.ob{min-width:42px;height:38px;padding:0 10px;border-radius:8px;border:2px solid var(--line);background:var(--surface);font-family:var(--display);font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+.ob[aria-pressed="true"]{background:var(--yellow);color:var(--yellow-fg);border-color:var(--yellow)}
+.ob.f{font-size:15px}
+.ob.f[aria-pressed="true"]{background:var(--navy);color:var(--navy-fg);border-color:var(--navy)}
+.otab{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.otab table{font-size:14px}.otab th,.otab td{padding:6px 8px}
+.otab td:first-child,.otab th:first-child{position:static;display:table-cell}
+.otab tr.best td{background:var(--good-bg)}.otab tr.worst td{background:var(--bad-bg)}
+.orgb{cursor:pointer}
+.demo-note{background:var(--yellow);color:var(--yellow-fg);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.demo-note .btn{background:var(--navy);color:var(--navy-fg)}
 .court{width:100%;max-width:520px;height:auto;display:block;margin:0 auto;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 .court[data-court]{cursor:crosshair}
 .typesel{display:grid;gap:6px}
@@ -247,15 +263,17 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
     <div class="topline"><span id="setLabel">Set 1</span><span id="setLog"></span><button class="btn small" data-undo>↶ Annulla</button></div>
     <div class="score">
       <div class="team"><span class="team-name" id="nameHome">Noi</span>
-        <div class="pts"><button class="pbtn" data-score="home" data-d="-1" aria-label="Togli punto alla nostra squadra">−</button><span class="num" id="homePts">0</span><button class="pbtn plus" data-score="home" data-d="1" aria-label="Punto alla nostra squadra">+</button></div></div>
+        <div class="pts"><span class="num" id="homePts">0</span><button class="pbtn plus" data-score="home" data-d="1" aria-label="Punto alla nostra squadra">+</button></div></div>
       <div class="sets"><span class="big" id="setsScore">0–0</span><small>Set vinti</small></div>
       <div class="team"><span class="team-name" id="nameAway">Avversari</span>
-        <div class="pts"><button class="pbtn" data-score="away" data-d="-1" aria-label="Togli punto agli avversari">−</button><span class="num" id="awayPts">0</span><button class="pbtn plus" data-score="away" data-d="1" aria-label="Punto agli avversari">+</button></div></div>
+        <div class="pts"><span class="num" id="awayPts">0</span><button class="pbtn plus" data-score="away" data-d="1" aria-label="Punto agli avversari">+</button></div></div>
     </div>
     <div class="views" role="tablist">
       <button class="vtab" role="tab" data-view="players">Giocatrici</button>
       <button class="vtab" role="tab" data-view="att">Attacchi</button>
       <button class="vtab" role="tab" data-view="dif">Difese</button>
+      <button class="vtab" role="tab" data-view="bat">Battute</button>
+      <button class="vtab" role="tab" data-view="ric">Ricezioni</button>
     </div>
   </div></header>
   <div class="wrap content">
@@ -268,28 +286,62 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
     <div class="confirm" id="newConfirm" hidden>Nuova partita con la stessa rosa? Questa partita viene salvata in "Partite giocate". <button class="btn danger" id="newYes">Sì, nuova partita</button><button class="btn" id="newNo">No</button></div>
 
     <div id="vPlayers" style="display:grid;gap:12px">
-      <p class="hint">Attacco e ricezione: ++ ottimo, + buono, − scarso, −− errore. Battuta: ✓ buona, ✗ non buona. "Cambio" propone prima le riserve dello stesso ruolo.</p>
+      <p class="hint">Il punteggio va da solo: ++ in attacco o in battuta dà il punto a noi, −− in attacco, ricezione o battuta lo dà all'avversaria. Per gli altri punti (errori avversari, muri, attacchi non difesi) usa + accanto al punteggio della squadra. "Cambio" propone prima le riserve dello stesso ruolo.</p>
       <div class="cards" id="cards"></div>
       <p class="benchline" id="benchLine"></p>
     </div>
 
     <div id="vAtt" class="courtview">
-      <div><svg class="court" id="court-att" data-court="att" role="img" aria-label="Metà campo avversaria"></svg></div>
-      <div class="side">
+      <div class="cv-ctl">
         <h3>Attacchi · campo avversario</h3>
+        <div class="orow"><span class="olab">Da dove parte il nostro attacco</span><div class="obtns" id="org-att"></div></div>
         <div class="typesel" id="sel-att"></div>
+      </div>
+      <div class="cv-court"><svg class="court" id="court-att" data-court="att" role="img" aria-label="Attacchi · campo avversario"></svg></div>
+      <div class="cv-info">
+        <div class="orow"><span class="olab">Mostra sul campo</span><div class="obtns" id="flt-att"></div></div>
         <div class="csum" id="sum-att"></div>
-        <p class="hint">Scegli il tipo, poi tocca il punto del campo in cui è caduta la palla. I simboli ripartono da zero a ogni set.</p>
+        <div class="otab" id="otab-att"></div>
+        <p class="hint">Scegli zona di partenza e tipo, poi tocca il punto in cui è caduta la palla. Puoi scegliere la zona anche toccando i cerchi numerati sul campo. I simboli ripartono da zero a ogni set.</p>
       </div>
     </div>
 
     <div id="vDif" class="courtview">
-      <div><svg class="court" id="court-dif" data-court="dif" role="img" aria-label="La nostra metà campo"></svg></div>
-      <div class="side">
+      <div class="cv-ctl">
         <h3>Difese · nostro campo</h3>
+        <div class="orow"><span class="olab">Da dove attacca l'avversaria</span><div class="obtns" id="org-dif"></div></div>
         <div class="typesel" id="sel-dif"></div>
+      </div>
+      <div class="cv-court"><svg class="court" id="court-dif" data-court="dif" role="img" aria-label="Difese · nostro campo"></svg></div>
+      <div class="cv-info">
+        <div class="orow"><span class="olab">Mostra sul campo</span><div class="obtns" id="flt-dif"></div></div>
         <div class="csum" id="sum-dif"></div>
-        <p class="hint">Scegli il tipo, poi tocca il punto del campo in cui è arrivata la palla. I simboli ripartono da zero a ogni set.</p>
+        <div class="otab" id="otab-dif"></div>
+        <p class="hint">Scegli zona di partenza dell'attacco avversario e tipo, poi tocca il punto in cui è arrivata la palla. Puoi scegliere la zona anche toccando i cerchi numerati sul campo. I simboli ripartono da zero a ogni set.</p>
+      </div>
+    </div>
+
+    <div id="vBat" class="courtview">
+      <div class="cv-ctl">
+        <h3>Battute · campo avversario</h3>
+        <div class="typesel" id="sel-bat"></div>
+      </div>
+      <div class="cv-court"><svg class="court" id="court-bat" data-court="bat" role="img" aria-label="Battute · campo avversario"></svg></div>
+      <div class="cv-info">
+        <div class="csum" id="sum-bat"></div>
+        <p class="hint">Scegli il tipo, poi tocca il punto in cui è caduta la nostra battuta. I simboli ripartono da zero a ogni set.</p>
+      </div>
+    </div>
+
+    <div id="vRic" class="courtview">
+      <div class="cv-ctl">
+        <h3>Ricezioni · nostro campo</h3>
+        <div class="typesel" id="sel-ric"></div>
+      </div>
+      <div class="cv-court"><svg class="court" id="court-ric" data-court="ric" role="img" aria-label="Ricezioni · nostro campo"></svg></div>
+      <div class="cv-info">
+        <div class="csum" id="sum-ric"></div>
+        <p class="hint">Scegli il tipo, poi tocca il punto in cui è arrivata la battuta avversaria. I simboli ripartono da zero a ogni set.</p>
       </div>
     </div>
   </div>
@@ -328,18 +380,22 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
 const ROLES=[["Palleggiatrice","P"],["Schiacciatrice","S"],["Centrale","C"],["Opposto","O"],["Libero","L"]];
 const RCODE=Object.fromEntries(ROLES), RORDER=Object.fromEntries(ROLES.map((r,i)=>[r[0],i]));
 const LV4=[{s:"++",c:"pp",pos:1},{s:"+",c:"p",pos:1},{s:"−",c:"m"},{s:"−−",c:"mm"}];
-const LV2=[{s:"✓",c:"p",pos:1},{s:"✗",c:"m"}];
-const CATS=[{k:"att",name:"Attacco",lv:LV4},{k:"ric",name:"Ricezione",lv:LV4},{k:"bat",name:"Battuta",lv:LV2,out:true}];
+const LV3=[{s:"++",c:"pp",pos:1},{s:"+",c:"p",pos:1},{s:"−−",c:"mm"}];
+const CATS=[{k:"att",name:"Attacco",lv:LV4},{k:"ric",name:"Ricezione",lv:LV4},{k:"bat",name:"Battuta",lv:LV3,out:true}];
 const TYPES={
   att:[{k:"a",name:"Attacco",sh:"circle",col:"blue"},{k:"ap",name:"Attacco punto",sh:"star",col:"green"},
        {k:"p",name:"Pallonetto",sh:"tri",col:"orange"},{k:"pp",name:"Pallonetto punto",sh:"diamond",col:"purple"}],
   dif:[{k:"pa",name:"Attacco difeso",sh:"circle",col:"green"},{k:"na",name:"Attacco punto",sh:"cross",col:"red"},
        {k:"pp",name:"Pallonetto difeso",sh:"tri",col:"blue"},{k:"np",name:"Pallonetto punto",sh:"diamond",col:"orange"}]
 };
-const GOODTYPES={att:["ap","pp"],dif:["pa","pp"]};
+TYPES.bat=[{k:"ace",name:"Ace",sh:"star",col:"green"},{k:"bb",name:"Battuta buona",sh:"circle",col:"blue"}];
+TYPES.ric=[{k:"rp",name:"Ricezione presa",sh:"circle",col:"green"},{k:"ra",name:"Ace subito",sh:"cross",col:"red"}];
+const GOODTYPES={att:["ap","pp"],dif:["pa","pp"],bat:["ace"],ric:["rp"]};
+const KINDS=["att","dif","bat","ric"],OPP=k=>k==="att"||k==="bat",HASORG=k=>k==="att"||k==="dif";
+const MAPTITLE={att:"Attacchi · campo avversario",dif:"Difese · nostro campo",bat:"Battute · campo avversario",ric:"Ricezioni · nostro campo"};
 const KEY="tabellino-volley-v3";
 const blankStats=()=>Object.fromEntries(CATS.map(c=>[c.k,c.lv.map(()=>0)]));
-const newSet=()=>({home:0,away:0,closed:false,stats:{},played:[],marks:{att:[],dif:[]}});
+const newSet=()=>({home:0,away:0,closed:false,stats:{},played:[],marks:{att:[],dif:[],bat:[],ric:[]}});
 function fresh(){
   return {phase:"roster",players:Array.from({length:13},(_,i)=>({id:"p"+(i+1),name:"",role:""})),nextId:14,
     teams:{home:"",away:""},sets:[newSet()],cur:0,court:[],draft:[],view:"players",sel:{att:"a",dif:"pa"},hist:[]};
@@ -352,10 +408,12 @@ if(!S||!S.players){
       const ok=o.players.filter(p=>p.name.trim()&&p.role).length>=6;S.phase=ok?"lineup":"roster";S.draft=[...(o.court||[])];}
   }catch(e){}
 }
-S.teams=S.teams||{home:"",away:""};S.view=S.view||"players";S.sel=S.sel||{att:"a",dif:"pa"};S.hist=S.hist||[];
-S.sets.forEach(s=>{s.marks=s.marks||{att:[],dif:[]}});
+S.teams=S.teams||{home:"",away:""};S.view=S.view||"players";S.sel={att:"a",dif:"pa",bat:"ace",ric:"rp",...(S.sel||{})};S.org=S.org||{att:"4",dif:"4"};S.flt=S.flt||{att:"all",dif:"all"};S.hist=S.hist||[];
+const fixBat=sets=>sets.forEach(s=>{s.marks=s.marks||{};KINDS.forEach(k=>s.marks[k]=s.marks[k]||[]);Object.values(s.stats||{}).forEach(o=>{if(o.bat&&o.bat.length===2)o.bat=[0,o.bat[0],o.bat[1]]})});
+fixBat(S.sets);
 S.matchId=S.matchId||("m"+Date.now());
 const AKEY="tabellino-volley-archivio";let ARCH=[];try{ARCH=JSON.parse(localStorage.getItem(AKEY))||[]}catch(e){}
+ARCH.forEach(a=>fixBat(a.sets));
 const saveArch=()=>{try{localStorage.setItem(AKEY,JSON.stringify(ARCH))}catch(e){}};
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=id=>document.getElementById(id);
@@ -443,8 +501,8 @@ const totLabel=st=>{const [p,n]=posNeg(st);return p+n?`${p} pos · ${n} neg`:""}
 function renderMatch(){
   renderScore();
   document.querySelectorAll(".vtab").forEach(b=>b.setAttribute("aria-selected",b.dataset.view===S.view));
-  $("vPlayers").hidden=S.view!=="players";$("vAtt").hidden=S.view!=="att";$("vDif").hidden=S.view!=="dif";
-  renderCards();renderCourt("att");renderCourt("dif");
+  $("vPlayers").hidden=S.view!=="players";$("vAtt").hidden=S.view!=="att";$("vDif").hidden=S.view!=="dif";$("vBat").hidden=S.view!=="bat";$("vRic").hidden=S.view!=="ric";
+  renderCards();KINDS.forEach(k=>renderCourt(k));
 }
 function renderCards(){
   $("cards").innerHTML=S.court.map(id=>{const p=byId(id);if(!p)return"";const st=curSet().stats[id]||blankStats();
@@ -463,6 +521,7 @@ function updateCard(id){
   el.querySelectorAll(".tap").forEach(b=>b.querySelector(".n").textContent=st[b.dataset.c][+b.dataset.r]);
   $("tot-"+id).textContent=totLabel(st);
 }
+function bump(side){const el=$(side==="home"?"homePts":"awayPts");el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump")}
 function renderScore(){
   $("nameHome").innerHTML=tn("home");$("nameAway").innerHTML=tn("away");
   const s=curSet();$("homePts").textContent=s.home;$("awayPts").textContent=s.away;
@@ -482,9 +541,13 @@ $("matchStats").onclick=openSummary;
 
 /* ---------- CAMPO ---------- */
 const NS='http://www.w3.org/2000/svg';
-const VB={att:"-1.5 -1.5 12 12.3",dif:"-1.5 -1.8 12 12.3"};
-const toY=(k,d)=>k==="att"?9-d:d, fromY=(k,y)=>k==="att"?9-y:y;
-const ZONES={att:{front:[2,3,4],back:[1,6,5]},dif:{front:[4,3,2],back:[5,6,1]}};
+const VB={att:"-1.5 -1.5 12 14.4",dif:"-1.5 -3.4 12 14.4",bat:"-1.5 -1.5 12 12.3",ric:"-1.5 -1.8 12 12.3"};
+const ORIG=["4","3","2","1","6"];
+const OX={att:{"4":1.2,"3":4.5,"2":7.8,"1":7.8,"6":4.5},dif:{"4":7.8,"3":4.5,"2":1.2,"1":1.2,"6":4.5}};
+const oPos=(k,o)=>({x:OX[k][o],d:["4","3","2"].includes(o)?-.85:-2.25});
+const OLAB={"?":"Non vista"};
+const toY=(k,d)=>OPP(k)?9-d:d, fromY=(k,y)=>OPP(k)?9-y:y;
+const ZONES={att:{front:[2,3,4],back:[1,6,5]},dif:{front:[4,3,2],back:[5,6,1]}};ZONES.bat=ZONES.att;ZONES.ric=ZONES.dif;
 function shape(t,x,y,r=.34,cls=""){
   const f=`style="fill:var(--mk-${t.col});stroke:var(--mk-stroke);stroke-width:${r*.2}"`,c=cls?` class="${cls}"`:"";
   const P=pts=>pts.map(p=>p.map(v=>v.toFixed(3)).join(",")).join(" ");
@@ -496,7 +559,7 @@ function shape(t,x,y,r=.34,cls=""){
     return `<g${c}>${l(r*.75,"var(--mk-stroke)")}${l(r*.42,`var(--mk-${t.col})`)}</g>`}
 }
 const icon=t=>`<svg class="ico" viewBox="-1 -1 2 2" aria-hidden="true">${shape(t,0,0,.5)}</svg>`;
-function courtInner(k,marks,newIdx=-1){
+function courtInner(k,marks,newIdx=-1,opt={}){
   const Y=d=>toY(k,d),top=(a,b)=>Math.min(Y(a),Y(b));
   let s=`<rect x="-1.5" y="${top(0,10.5)}" width="12" height="10.5" style="fill:var(--free)"/>`;
   s+=`<rect x="0" y="${top(0,9)}" width="9" height="9" style="fill:var(--court)"/>`;
@@ -507,28 +570,52 @@ function courtInner(k,marks,newIdx=-1){
   s+=`<g style="stroke:var(--courtline);stroke-width:.1;fill:none"><rect x="0" y="${top(0,9)}" width="9" height="9"/><line x1="0" x2="9" y1="${Y(3)}" y2="${Y(3)}"/></g>`;
   s+=`<line x1="-.7" x2="9.7" y1="${Y(0)}" y2="${Y(0)}" style="stroke:var(--net);stroke-width:.2"/>`;
   s+=`<circle cx="-.7" cy="${Y(0)}" r=".14" style="fill:var(--net)"/><circle cx="9.7" cy="${Y(0)}" r=".14" style="fill:var(--net)"/>`;
-  s+=`<text x="4.5" y="${Y(0)+(k==="att"?.85:-.5)}" style="fill:var(--muted);font:700 .55px sans-serif;text-anchor:middle;letter-spacing:.15px">RETE</text>`;
   const T=Object.fromEntries(TYPES[k].map(t=>[t.k,t]));
-  s+=marks.map((m,i)=>T[m.t]?shape(T[m.t],m.x,Y(m.d),.22,i===newIdx?"mk-new":""):"").join("");
+  if(!HASORG(k)){
+    s+=`<text x="4.5" y="${Y(0)+(OPP(k)?.85:-.5)}" style="fill:var(--muted);font:700 .55px sans-serif;text-anchor:middle;letter-spacing:.15px">RETE</text>`;
+    return s+marks.map((m,i)=>T[m.t]?shape(T[m.t],m.x,Y(m.d),.22,i===newIdx?"mk-new":""):"").join("");
+  }
+  s+=`<text x="-1.3" y="${Y(0)+(k==="att"?.55:-.3)}" style="fill:var(--muted);font:700 .42px sans-serif;letter-spacing:.1px">RETE</text>`;
+  s+=`<text x="${k==="att"?-1.3:10.3}" y="${k==="att"?12.55:-3.02}" style="fill:var(--muted);font:700 .36px sans-serif;text-anchor:${k==="att"?"start":"end"}">${k==="att"?"NOSTRO CAMPO":"CAMPO AVVERSARIO"}</text>`;
+  const flt=opt.filter||"all",shown=marks.map((m,i)=>[m,i]).filter(([m])=>flt==="all"||m.o===flt);
+  ORIG.forEach(o=>{const p=oPos(k,o),sel=opt.org===o,dim=flt!=="all"&&flt!==o;
+    s+=`<g${opt.interactive?` class="orgb" data-org="${k}:${o}"`:""} style="opacity:${dim?.35:1}"><circle cx="${p.x}" cy="${Y(p.d)}" r=".5" style="fill:${sel?"var(--yellow)":"var(--surface)"};stroke:${sel?"var(--yellow-fg)":"var(--muted)"};stroke-width:.06"/>
+      <text x="${p.x}" y="${Y(p.d)}" style="fill:${sel?"var(--yellow-fg)":"var(--fg)"};font:800 .62px sans-serif;text-anchor:middle;dominant-baseline:central">${o}</text></g>`});
+  s+=`<g style="stroke-linecap:round;fill:none">`+shown.map(([m])=>{if(!T[m.t]||!OX[k][m.o])return"";const p=oPos(k,m.o);
+    return `<line x1="${p.x}" y1="${Y(p.d)}" x2="${m.x}" y2="${Y(m.d)}" style="stroke:var(--mk-${T[m.t].col});stroke-width:.07;opacity:${flt==="all"?.28:.6}"/>`}).join("")+`</g>`;
+  s+=shown.map(([m,i])=>T[m.t]?shape(T[m.t],m.x,Y(m.d),.22,i===newIdx?"mk-new":""):"").join("");
   return s;
 }
+function otab(k,marks){
+  const rows=[...ORIG,"?"].map(o=>{const ms=marks.filter(m=>(m.o||"?")===o),g=ms.filter(m=>GOODTYPES[k].includes(m.t)).length;return{o,n:ms.length,g}}).filter(r=>r.n);
+  if(!rows.length)return `<p class="hint" style="padding:8px 10px">Ancora nessun ${k==="att"?"attacco":"attacco avversario"} segnato.</p>`;
+  const cand=rows.filter(r=>r.o!=="?"&&r.n>=3),best=cand.length<2?null:cand.sort((a,b)=>(k==="att"?b.g/b.n-a.g/a.n:a.g/a.n-b.g/b.n))[0];
+  return `<table><thead><tr><th>Da</th><th>${k==="att"?"Attacchi":"Subiti"}</th><th>${k==="att"?"Punti":"Difesi"}</th><th>%</th></tr></thead><tbody>${
+    rows.map(r=>`<tr${best&&r===best?(k==="att"?' class="best"':' class="worst"'):""}><td><b>${r.o==="?"?"?":"Posto "+r.o}</b></td><td>${r.n}</td><td>${r.g}</td><td class="pct">${pct(r.g,r.n)}</td></tr>`).join("")}</tbody></table>`;
+}
+const orgBtns=(k)=>[...ORIG,"?"].map(o=>`<button class="ob" data-orgbtn="${k}:${o}" aria-pressed="${S.org[k]===o}" title="${o==="?"?"Zona non vista":"Posto "+o}">${o}</button>`).join("");
+const fltBtns=(k,cur,attr)=>[["all","Tutti"],...ORIG.map(o=>[o,o])].map(([v,l])=>`<button class="ob f" data-${attr}="${k}:${v}" aria-pressed="${cur===v}">${l}</button>`).join("");
 function counts(k,marks){const o=Object.fromEntries(TYPES[k].map(t=>[t.k,0]));marks.forEach(m=>{if(m.t in o)o[m.t]++});return o}
-function sumLine(k,marks){
+function sumLine(k,marks,flt="all"){
+  if(flt!=="all")marks=marks.filter(m=>m.o===flt);
+  const pre=flt==="all"?"":`Da posto ${flt} · `;
   const c=counts(k,marks),tot=marks.length,g=GOODTYPES[k].reduce((a,t)=>a+c[t],0);
-  return k==="att"?`Punti in attacco: <b>${g}</b> su ${tot} (${pct(g,tot)})`:`Palloni difesi: <b>${g}</b> su ${tot} (${pct(g,tot)})`;
+  return pre+`${{att:"Punti in attacco",dif:"Palloni difesi",bat:"Ace",ric:"Ricezioni prese"}[k]}: <b>${g}</b> su ${tot} (${pct(g,tot)})`;
 }
 function renderCourt(k,newIdx=-1){
   const marks=curSet().marks[k],svg=$("court-"+k);
-  svg.setAttribute("viewBox",VB[k]);svg.innerHTML=courtInner(k,marks,newIdx);
+  svg.setAttribute("viewBox",VB[k]);const h=HASORG(k);svg.innerHTML=courtInner(k,marks,newIdx,h?{filter:S.flt[k],org:S.org[k],interactive:true}:{});
+  if(h){$("org-"+k).innerHTML=orgBtns(k);$("flt-"+k).innerHTML=fltBtns(k,S.flt[k],"flt");$("otab-"+k).innerHTML=otab(k,marks)}
   const c=counts(k,marks);
   $("sel-"+k).innerHTML=TYPES[k].map(t=>`<button class="type" data-type="${k}:${t.k}" aria-pressed="${S.sel[k]===t.k}">${icon(t)}<span class="tl">${t.name}</span><span class="tc">${c[t.k]}</span></button>`).join("");
-  $("sum-"+k).innerHTML=sumLine(k,marks);
+  $("sum-"+k).innerHTML=sumLine(k,marks,h?S.flt[k]:"all");
 }
 function courtClick(svg,e){
   const k=svg.dataset.court,pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
   const p=pt.matrixTransform(svg.getScreenCTM().inverse()),x=p.x,d=fromY(k,p.y);
   if(d<0||d>10.5||x<-1.5||x>10.5)return;
-  commit(()=>{curSet().marks[k].push({x:+x.toFixed(2),d:+d.toFixed(2),t:S.sel[k]})},()=>{renderCourt(k,curSet().marks[k].length-1);renderUndo()});
+  const h=HASORG(k);if(h&&S.flt[k]!=="all"&&S.flt[k]!==S.org[k])S.flt[k]="all";
+  commit(()=>{curSet().marks[k].push({x:+x.toFixed(2),d:+d.toFixed(2),t:S.sel[k],...(h?{o:S.org[k]}:{})})},()=>{renderCourt(k,curSet().marks[k].length-1);renderUndo()});
 }
 
 /* ---------- CAMBI ---------- */
@@ -554,13 +641,19 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("subShade").h
 document.addEventListener("click",e=>{
   const t=e.target.closest(".tap");
   if(t){const id=t.dataset.p,c=t.dataset.c,r=+t.dataset.r;
-    commit(()=>{stOf(id)[c][r]++},()=>{updateCard(id);renderUndo();t.classList.remove("flash");void t.offsetWidth;t.classList.add("flash")});return}
+    const lv=CATS.find(x=>x.k===c).lv[r].c;
+    const side=lv==="pp"&&(c==="att"||c==="bat")?"home":lv==="mm"?"away":null;
+    commit(()=>{stOf(id)[c][r]++;if(side)curSet()[side]++},()=>{updateCard(id);renderScore();if(side)bump(side);t.classList.remove("flash");void t.offsetWidth;t.classList.add("flash")});return}
+  const og=e.target.closest("[data-org],[data-orgbtn]");
+  if(og){const [k,v]=(og.dataset.org||og.dataset.orgbtn).split(":");S.org[k]=v;save();renderCourt(k);return}
+  const fl=e.target.closest("[data-flt]");if(fl){const [k,v]=fl.dataset.flt.split(":");S.flt[k]=v;save();renderCourt(k);return}
+  const sf=e.target.closest("[data-sflt]");if(sf){const [k,v]=sf.dataset.sflt.split(":");sumFlt[k]=v;renderSummary();return}
   const cv=e.target.closest("svg[data-court]");if(cv){courtClick(cv,e);return}
   const ty=e.target.closest("[data-type]");
   if(ty){const [k,v]=ty.dataset.type.split(":");S.sel[k]=v;save();renderCourt(k);return}
   const vt=e.target.closest("[data-view]");if(vt){S.view=vt.dataset.view;save();renderMatch();return}
   const sc=e.target.closest("[data-score]");
-  if(sc){const side=sc.dataset.score,d=+sc.dataset.d;if(curSet()[side]+d<0)return;commit(()=>{curSet()[side]+=d},renderScore);return}
+  if(sc){const side=sc.dataset.score,d=+sc.dataset.d;if(curSet()[side]+d<0)return;commit(()=>{curSet()[side]+=d},()=>{renderScore();bump(side)});return}
   const sb=e.target.closest("[data-sub]");if(sb){openSub(sb.dataset.sub);return}
   const inn=e.target.closest("[data-in]");
   if(inn&&subOut){const out=subOut,id=inn.dataset.in;closeSub();
@@ -578,9 +671,9 @@ document.addEventListener("input",e=>{
 document.addEventListener("change",e=>{const r=e.target.dataset.rid;if(!r)return;const p=byId(r);if(p){p[e.target.dataset.f]=e.target.value;save()}});
 
 /* ---------- STATISTICHE ---------- */
-let tab="tot",M=null,fromArch=false;
+let tab="tot",M=null,fromArch=false;const sumFlt={att:"all",dif:"all"};
 const liveMatch=()=>({teams:S.teams,sets:S.sets,players:S.players,date:S.date});
-const usedIdx=m=>m.sets.map((s,i)=>i).filter(i=>{const s=m.sets[i];return s.closed||s.home||s.away||Object.keys(s.stats).length||s.marks.att.length||s.marks.dif.length});
+const usedIdx=m=>m.sets.map((s,i)=>i).filter(i=>{const s=m.sets[i];return s.closed||s.home||s.away||Object.keys(s.stats).length||KINDS.some(k=>(s.marks[k]||[]).length)});
 const nm=(m,k)=>esc((m.teams[k]||"").trim()||(k==="home"?"Noi":"Avversari"));
 const fmtDate=t=>t?new Date(t).toLocaleDateString("it-IT",{weekday:"short",day:"numeric",month:"short",year:"numeric"}):"";
 const setsWon=m=>{const d=m.sets.filter(s=>s.closed);return[d.filter(s=>s.home>s.away).length,d.filter(s=>s.away>s.home).length]};
@@ -626,12 +719,14 @@ function renderSummary(){
       <tr><th>Giocatrice</th>${showSets?"<th>Set</th>":""}${CATS.map(c=>c.lv.map((l,j)=>`<th${j?"":` class="gsep"`}>${l.s}</th>`).join("")+"<th>%</th>").join("")}<th class="gsep">pos / neg</th><th>%</th></tr></thead>
       <tbody>${body}<tr class="tot"><td>Squadra</td>${showSets?"<td></td>":""}${line(team)}</tr></tbody></table>`;
   }
-  $("maps").innerHTML=["att","dif"].map(k=>{
-    const marks=idxs.flatMap(i=>m.sets[i].marks[k]),c=counts(k,marks);
-    return `<figure class="map" style="margin:0"><h3>${k==="att"?"Attacchi · campo avversario":"Difese · nostro campo"}</h3>
-      <svg class="court" viewBox="${VB[k]}" role="img" aria-label="${k==="att"?"Mappa attacchi":"Mappa difese"}">${courtInner(k,marks)}</svg>
+  $("maps").innerHTML=KINDS.map(k=>{
+    const marks=idxs.flatMap(i=>m.sets[i].marks[k]||[]),c=counts(k,marks),h=HASORG(k),f=h?sumFlt[k]:"all";
+    return `<figure class="map" style="margin:0"><h3>${MAPTITLE[k]}</h3>
+      ${h?`<div class="orow"><span class="olab">Mostra</span><div class="obtns">${fltBtns(k,f,"sflt")}</div></div>`:""}
+      <svg class="court" viewBox="${VB[k]}" role="img" aria-label="Mappa ${MAPTITLE[k]}">${courtInner(k,marks,-1,{filter:f})}</svg>
       <div class="legend">${TYPES[k].map(t=>`<span>${icon(t)}${t.name}<b>${c[t.k]}</b></span>`).join("")}</div>
-      <div class="csum">${sumLine(k,marks)}</div></figure>`}).join("");
+      <div class="csum">${sumLine(k,marks,f)}</div>
+      ${h?`<div class="otab">${otab(k,marks)}</div>`:""}</figure>`}).join("");
 }
 $("tabs").addEventListener("click",e=>{const t=e.target.closest("[data-tab]");if(t){tab=t.dataset.tab;renderSummary()}});
 $("backBtn").onclick=()=>{$("summary").hidden=true;if(fromArch)openArchive()};
