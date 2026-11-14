@@ -580,7 +580,9 @@ function renderMatch(){
   renderCards();KINDS.forEach(k=>renderCourt(k));
 }
 function renderCards(){
-  $("cards").innerHTML=S.court.map(id=>{const p=byId(id);if(!p)return"";const st=curSet().stats[id]||blankStats();
+  const CARDORDER={Libero:0,Schiacciatrice:1,Centrale:2,Opposto:3,Palleggiatrice:4};
+  const order=S.court.map((id,i)=>[id,i]).sort((a,b)=>((CARDORDER[byId(a[0])?.role]??9)-(CARDORDER[byId(b[0])?.role]??9))||a[1]-b[1]).map(x=>x[0]);
+  $("cards").innerHTML=order.map(id=>{const p=byId(id);if(!p)return"";const st=curSet().stats[id]||blankStats();
     return `<article class="player" id="pl-${id}">
       <div class="phead">${badge(p)}<span class="pname" title="${esc(p.name)}">${esc(p.name)}</span>
         <button class="subbtn" data-sub="${id}" aria-label="Cambio, ${esc(p.name)}" title="Cambio">⇄</button></div>
