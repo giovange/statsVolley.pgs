@@ -114,9 +114,9 @@ h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.04e
 .actions .primary{margin-left:auto}
 
 /* Schede giocatrici */
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(166px,1fr));gap:8px}
 #phMatch .wrap{max-width:1180px}
-.player{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px;display:grid;gap:6px;min-width:0}
+.player{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:7px;display:grid;gap:6px;min-width:0}
 .player .role{min-width:24px;height:24px;padding:0 4px;font-size:14px;border-radius:6px}
 .phead{display:flex;align-items:center;gap:6px;min-width:0}
 .pname{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -128,7 +128,8 @@ h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.04e
 .cname{font-family:var(--display);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cname em{font-style:normal;font-weight:500;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
 .lv{display:grid;gap:3px}
-.lv4{grid-template-columns:repeat(4,1fr)}.lv3{grid-template-columns:repeat(3,1fr)}
+.lv5{grid-template-columns:repeat(5,1fr)}
+.lv5{gap:2px}.lv3{grid-template-columns:repeat(3,1fr)}
 .tap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;height:40px;padding:2px;border-radius:6px;font-weight:700;font-variant-numeric:tabular-nums;transition:transform .08s;min-width:0}
 .tap:active{transform:scale(.95)}
 .tap .s{font-family:var(--display);font-size:13px;font-weight:800;line-height:1;letter-spacing:-.02em}
@@ -136,6 +137,9 @@ h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.04e
 .tap.pp{background:var(--good-strong);color:var(--on-strong)}
 .tap.p{background:var(--good-bg);color:var(--good)}
 .tap.m{background:var(--bad-bg);color:var(--bad)}
+.tap.sl{background:var(--mk-orange);color:var(--yellow-fg)}
+.o{color:var(--mk-orange);font-weight:600}
+td.eff{font-weight:700}
 .tap.mm{background:var(--bad-strong);color:var(--on-strong)}
 .flash{animation:fl .35s}
 @keyframes fl{0%{box-shadow:0 0 0 0 var(--yellow)}100%{box-shadow:0 0 0 8px transparent}}
@@ -313,7 +317,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
     <div id="vPlayers" style="display:grid;gap:12px">
       <div class="cards" id="cards"></div>
       <p class="benchline" id="benchLine"></p>
-      <p class="hint">Il punteggio va da solo: ++ in attacco o in battuta dà il punto a noi, −− in attacco, ricezione o battuta lo dà all'avversaria. Per gli altri punti usa + accanto al punteggio. ⇄ fa un cambio e propone prima le riserve dello stesso ruolo.</p>
+      <p class="hint">Il punteggio va da solo: ++ in attacco o in battuta dà il punto a noi, −− in attacco, ricezione o battuta lo dà all'avversaria. Per gli altri punti usa + accanto al punteggio. Lo / arancione segna un attacco murato con palla ancora in gioco, o una ricezione tornata nel campo avversario, e non cambia il punteggio. ⇄ fa un cambio e propone prima le riserve dello stesso ruolo.</p>
     </div>
 
     <div id="vAtt" class="courtview">
@@ -422,7 +426,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="final" id="finalBox"></div>
   <div class="tablebox" id="tableBox"></div>
-  <p class="hint">% = azioni positive (++ e +, oppure ✓) sul totale della categoria. Nel set compaiono le giocatrici scese in campo in quel set; nel totale quelle che hanno giocato almeno un set.</p>
+  <p class="hint">% = azioni positive (++ e +) sul totale della categoria. Eff. = efficienza: (++ − −−) / totale × 100, cioè in battuta (ace − errori) / battute totali, in attacco (punti − errori) / attacchi totali, in ricezione (perfette − errori) / ricezioni totali. Lo / arancione conta nel totale ma non è né positivo né negativo. Nel set compaiono le giocatrici scese in campo in quel set; nel totale quelle che hanno giocato almeno un set.</p>
   <div class="maps" id="maps"></div>
 </div></section>
 
@@ -436,9 +440,9 @@ tr.tot td{font-weight:700;border-top:2px solid var(--fg);border-bottom:0}
 <script>
 const ROLES=[["Palleggiatrice","P"],["Schiacciatrice","S"],["Centrale","C"],["Opposto","O"],["Libero","L"]];
 const RCODE=Object.fromEntries(ROLES), RORDER=Object.fromEntries(ROLES.map((r,i)=>[r[0],i]));
-const LV4=[{s:"++",c:"pp",pos:1},{s:"+",c:"p",pos:1},{s:"−",c:"m"},{s:"−−",c:"mm"}];
+const LV5=[{s:"++",c:"pp",pos:1},{s:"+",c:"p",pos:1},{s:"/",c:"sl",neu:1},{s:"−",c:"m"},{s:"−−",c:"mm"}];
 const LV3=[{s:"++",c:"pp",pos:1},{s:"+",c:"p",pos:1},{s:"−−",c:"mm"}];
-const CATS=[{k:"att",name:"Attacco",lv:LV4},{k:"ric",name:"Ricezione",lv:LV4},{k:"bat",name:"Battuta",lv:LV3,out:true}];
+const CATS=[{k:"att",name:"Attacco",lv:LV5},{k:"ric",name:"Ricezione",lv:LV5},{k:"bat",name:"Battuta",lv:LV3,out:true}];
 const TYPES={
   att:[{k:"a",name:"Attacco",sh:"circle",col:"blue"},{k:"ap",name:"Attacco punto",sh:"star",col:"green"},
        {k:"p",name:"Pallonetto",sh:"tri",col:"orange"},{k:"pp",name:"Pallonetto punto",sh:"diamond",col:"purple"}],
@@ -466,8 +470,10 @@ if(!S||!S.players){
       const ok=o.players.filter(p=>p.name.trim()&&p.role).length>=6;S.phase=ok?"lineup":"roster";S.draft=[...(o.court||[])];}
   }catch(e){}
 }
-S.teams=S.teams||{home:"",away:""};S.view=S.view||"players";S.sel={att:"a",dif:"pa",bat:"ace",ric:"rp",...(S.sel||{})};S.org=S.org||{att:"4",dif:"4"};S.flt=S.flt||{att:"all",dif:"all"};S.hist=S.hist||[];
-const fixBat=sets=>sets.forEach(s=>{s.marks=s.marks||{};KINDS.forEach(k=>s.marks[k]=s.marks[k]||[]);Object.values(s.stats||{}).forEach(o=>{if(o.bat&&o.bat.length===2)o.bat=[0,o.bat[0],o.bat[1]]})});
+// completa i campi che le versioni vecchie del sito non salvavano
+function normS(){S.teams=S.teams||{home:"",away:""};S.view=S.view||"players";S.sel={att:"a",dif:"pa",bat:"ace",ric:"rp",...(S.sel||{})};S.org={att:"4",dif:"4",...(S.org||{})};S.flt={att:"all",dif:"all",...(S.flt||{})};S.hist=S.hist||[];S.sets=S.sets&&S.sets.length?S.sets:[newSet()];S.cur=Math.min(S.cur||0,S.sets.length-1);S.court=S.court||[];S.players=S.players||[]}
+normS();
+const fixBat=sets=>sets.forEach(s=>{s.marks=s.marks||{};KINDS.forEach(k=>s.marks[k]=s.marks[k]||[]);Object.values(s.stats||{}).forEach(o=>{if(o.bat&&o.bat.length===2)o.bat=[0,o.bat[0],o.bat[1]];["att","ric"].forEach(k=>{if(o[k]&&o[k].length===4)o[k]=[o[k][0],o[k][1],0,o[k][2],o[k][3]]})})});
 fixBat(S.sets);
 S.matchId=S.matchId||("m"+Date.now());
 const AKEY="tabellino-volley-archivio";let ARCH=[];try{ARCH=JSON.parse(localStorage.getItem(AKEY))||[]}catch(e){}
@@ -481,6 +487,8 @@ const byId=id=>S.players.find(p=>p.id===id);
 const roleSort=(a,b)=>(RORDER[byId(a)?.role]??9)-(RORDER[byId(b)?.role]??9);
 const badge=p=>`<span class="role ${RCODE[p.role]||""}" title="${esc(p.role)}">${RCODE[p.role]||"?"}</span>`;
 const pct=(g,t)=>t?Math.round(g/t*100)+"%":"–";
+// efficienza = (punti/ace/perfette − errori) / totale × 100
+const effCell=(best,err,tot)=>{if(!tot)return'<td class="dim">–</td>';const e=Math.round((best-err)/tot*100);return `<td class="eff ${e>0?"g":e<0?"b":"dim"}">${e>0?"+":e<0?"−":""}${Math.abs(e)}%</td>`};
 
 /* ---------- AZIONI ---------- */
 const SETSCOPED=new Set(["lineup","stat","score","sub","mark","closeSet"]);
@@ -492,8 +500,8 @@ function apply(S,a){
     case "editRoster":S.phase="roster";break;
     case "teams":S.teams={home:a.teams.home||"",away:a.teams.away||""};break;
     case "lineup":{if(a.set!==S.cur)break;S.court=a.court.filter(has);const s=set(a.set);s.played=[...new Set([...s.played,...S.court])];S.phase="match";S.draft=null;if(!S.date)S.date=a.ts;break}
-    case "stat":{const s=set(a.set),st=s.stats[a.p]||(s.stats[a.p]=blankStats());if(!st[a.c]||st[a.c][a.r]===undefined)break;st[a.c][a.r]++;
-      const lv=CATS.find(x=>x.k===a.c).lv[a.r].c,side=lv==="pp"&&(a.c==="att"||a.c==="bat")?"home":lv==="mm"?"away":null;if(side)s[side]++;break}
+    case "stat":{const r=!a.v&&(a.c==="att"||a.c==="ric")&&a.r>=2?a.r+1:a.r;const s=set(a.set),st=s.stats[a.p]||(s.stats[a.p]=blankStats());if(!st[a.c]||st[a.c][r]===undefined)break;st[a.c][r]++;
+      const lv=CATS.find(x=>x.k===a.c).lv[r].c,side=lv==="pp"&&(a.c==="att"||a.c==="bat")?"home":lv==="mm"?"away":null;if(side)s[side]++;break}
     case "score":{const s=set(a.set);if(s[a.side]+a.d>=0)s[a.side]+=a.d;break}
     case "sub":{if(a.set!==S.cur)break;const i=S.court.indexOf(a.out);if(i<0||S.court.includes(a.in)||!has(a.in))break;S.court[i]=a.in;const s=set(a.set);if(!s.played.includes(a.in))s.played.push(a.in);break}
     case "mark":{const s=set(a.set);(s.marks[a.k]=s.marks[a.k]||[]).push({x:a.x,d:a.d,t:a.t,...(a.o?{o:a.o}:{})});break}
@@ -501,14 +509,14 @@ function apply(S,a){
   }
 }
 function act(a,after=render){
-  a.ts=Date.now();if(SETSCOPED.has(a.type)&&a.set===undefined)a.set=S.cur;
+  a.ts=Date.now();a.v=2;if(SETSCOPED.has(a.type)&&a.set===undefined)a.set=S.cur;
   if(LIVE){LIVE.push(a);after();return}
   commit(()=>apply(S,a),after);
 }
 let LIVE=null;
 function snap(){const {hist,...rest}=S;S.hist.push(JSON.stringify(rest));if(S.hist.length>200)S.hist.shift()}
 function commit(fn,after=render){snap();fn();save();after()}
-function undo(){if(LIVE){LIVE.undo();return}const h=S.hist.pop();if(!h)return;const hist=S.hist;S=JSON.parse(h);S.hist=hist;save();if(ARCH.some(a=>a.id===S.matchId)){ARCH=ARCH.filter(a=>a.id!==S.matchId);saveArch()}closeSub();render()}
+function undo(){if(LIVE){LIVE.undo();return}const h=S.hist.pop();if(!h)return;const hist=S.hist;S=JSON.parse(h);S.hist=hist;normS();fixBat(S.sets);save();if(ARCH.some(a=>a.id===S.matchId)){ARCH=ARCH.filter(a=>a.id!==S.matchId);saveArch()}closeSub();render()}
 function renderUndo(){const n=LIVE?LIVE.mine.length:S.hist.length;document.querySelectorAll("[data-undo]").forEach(b=>{b.disabled=!n;b.title=LIVE?"Annulla la tua ultima azione":""})}
 
 function render(){
@@ -571,7 +579,7 @@ $("lineupStats").onclick=openSummary;
 /* ---------- PARTITA ---------- */
 const curSet=()=>S.sets[S.cur];
 const stOf=(pid,s=curSet())=>s.stats[pid]||(s.stats[pid]=blankStats());
-const posNeg=st=>{let p=0,n=0;CATS.forEach(c=>c.lv.forEach((l,j)=>l.pos?p+=st[c.k][j]:n+=st[c.k][j]));return[p,n]};
+const posNeg=st=>{let p=0,n=0,u=0;CATS.forEach(c=>c.lv.forEach((l,j)=>{const v=st[c.k][j]||0;if(l.pos)p+=v;else if(l.neu)u+=v;else n+=v}));return[p,n,u]};
 const totLabel=st=>{const [p,n]=posNeg(st);return p+n?`${p} pos · ${n} neg`:""};
 function renderMatch(){
   renderScore();
@@ -784,17 +792,17 @@ function renderSummary(){
   else{
     const showSets=tab==="tot",team=blankStats();
     const catCells=(c,arr)=>{const tot=arr.reduce((a,b)=>a+b,0);
-      if(!tot)return c.lv.map((_,j)=>`<td class="dim${j?"":" gsep"}">–</td>`).join("")+`<td class="dim">–</td>`;
+      if(!tot)return c.lv.map((_,j)=>`<td class="dim${j?"":" gsep"}">–</td>`).join("")+`<td class="dim">–</td><td class="dim">–</td>`;
       const pos=arr.reduce((a,v,j)=>a+(c.lv[j].pos?v:0),0);
-      return arr.map((v,j)=>`<td class="${j?"":"gsep "}${v?(c.lv[j].pos?"g":"b"):"dim"}">${v}</td>`).join("")+`<td class="pct">${pct(pos,tot)}</td>`};
-    const line=o=>{const [p,n]=posNeg(o);
-      return CATS.map(c=>catCells(c,o[c.k])).join("")+(p+n?`<td class="gsep"><span class="g">${p}</span> / <span class="b">${n}</span></td><td class="pct">${pct(p,p+n)}</td>`:`<td class="gsep dim">–</td><td class="dim">–</td>`)};
+      return arr.map((v,j)=>`<td class="${j?"":"gsep "}${v?(c.lv[j].pos?"g":c.lv[j].neu?"o":"b"):"dim"}">${v}</td>`).join("")+`<td class="pct">${pct(pos,tot)}</td>`+effCell(arr[0],arr[arr.length-1],tot)};
+    const line=o=>{const [p,n,u]=posNeg(o),t=p+n+u;
+      return CATS.map(c=>catCells(c,o[c.k])).join("")+(t?`<td class="gsep"><span class="g">${p}</span> / <span class="b">${n}</span></td><td class="pct">${pct(p,t)}</td>`:`<td class="gsep dim">–</td><td class="dim">–</td>`)};
     const body=rows.map(id=>{const p=pl(id),o=agg(m,id,idxs);CATS.forEach(c=>c.lv.forEach((_,j)=>team[c.k][j]+=o[c.k][j]));
       const played=sets.filter(i=>m.sets[i].played.includes(id)||m.sets[i].stats[id]).map(i=>i+1).join(", ");
       return `<tr><td>${badge(p)}<span>${esc(p.name)}</span></td>${showSets?`<td class="dim">${played}</td>`:""}${line(o)}</tr>`}).join("");
     $("tableBox").innerHTML=`<table><thead>
-      <tr><th></th>${showSets?"<th></th>":""}${CATS.map(c=>`<th colspan="${c.lv.length+1}" class="gsep">${c.name}</th>`).join("")}<th colspan="2" class="gsep">Totale</th></tr>
-      <tr><th>Giocatrice</th>${showSets?"<th>Set</th>":""}${CATS.map(c=>c.lv.map((l,j)=>`<th${j?"":` class="gsep"`}>${l.s}</th>`).join("")+"<th>%</th>").join("")}<th class="gsep">pos / neg</th><th>%</th></tr></thead>
+      <tr><th></th>${showSets?"<th></th>":""}${CATS.map(c=>`<th colspan="${c.lv.length+2}" class="gsep">${c.name}</th>`).join("")}<th colspan="2" class="gsep">Totale</th></tr>
+      <tr><th>Giocatrice</th>${showSets?"<th>Set</th>":""}${CATS.map(c=>c.lv.map((l,j)=>`<th${j?"":` class="gsep"`}>${l.s}</th>`).join("")+'<th>%</th><th title="Efficienza = (++ − −−) / totale × 100">Eff.</th>').join("")}<th class="gsep">pos / neg</th><th>%</th></tr></thead>
       <tbody>${body}<tr class="tot"><td>Squadra</td>${showSets?"<td></td>":""}${line(team)}</tr></tbody></table>`;
   }
   $("maps").innerHTML=KINDS.map(k=>{
@@ -853,6 +861,21 @@ const MODEKEY="tabellino-live-mode",UIKEY="tabellino-live-ui",CIDKEY="tabellino-
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 let DB=null,DBREADY=false;
 let CID=ls.get(CIDKEY);if(!CID){CID="d"+Math.random().toString(36).slice(2,10);ls.set(CIDKEY,CID)}
+// ogni finestra/scheda ha il proprio registro: SID resta uguale ricaricando la stessa scheda, cambia in una scheda nuova
+const SIDKEY="tabellino-live-sid",newSid=()=>Math.random().toString(36).slice(2,8);
+let SID=null;try{SID=sessionStorage.getItem(SIDKEY)}catch(e){}
+if(!SID||!/^[a-z0-9]+$/.test(SID)){SID=newSid();try{sessionStorage.setItem(SIDKEY,SID)}catch(e){}}
+const wid=()=>CID+"_"+SID;
+const TABNONCE=Math.random().toString(36).slice(2);
+let TABCH=null;try{TABCH=new BroadcastChannel("tabellino-live-tabs")}catch(e){}
+if(TABCH){
+  // una scheda duplicata eredita lo stesso SID: chi arriva dopo ne prende uno nuovo
+  TABCH.onmessage=ev=>{const m=ev.data||{};
+    if(m.t==="hello"&&m.sid===SID&&m.nonce!==TABNONCE)TABCH.postMessage({t:"taken",sid:SID,to:m.nonce});
+    if(m.t==="taken"&&m.to===TABNONCE&&m.sid===SID&&!LIVE){SID=newSid();try{sessionStorage.setItem(SIDKEY,SID)}catch(e){}}};
+  TABCH.postMessage({t:"hello",sid:SID,nonce:TABNONCE});
+}
+const backupKey=code=>`tabellino-live-log-${code}-${wid()}`;
 const LETTERS="ABCDEFGHJKLMNPQRSTUVWXYZ",DIGITS="23456789";
 const newCode=()=>Array.from({length:3},()=>LETTERS[Math.floor(Math.random()*LETTERS.length)]).join("")+"-"+Array.from({length:3},()=>DIGITS[Math.floor(Math.random()*DIGITS.length)]).join("");
 const normCode=v=>{const c=String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");return c.length===6?c.slice(0,3)+"-"+c.slice(3):null};
@@ -865,16 +888,16 @@ function foldMatch(actions){
 }
 class Live{
   constructor(code){
-    this.code=code;this.mine=ls.get("tabellino-live-log-"+code)||[];this.others={};this.devices=new Set();
+    this.code=code;this.mine=ls.get(backupKey(code))||[];this.others={};this.devices=new Set();
     this.ui=ls.get(UIKEY)||{};this.status="wait";this.writing=false;this.dirty=false;this.confirmed=false;this.unsub=null;this.metaLast="";this.metaTimer=null;
   }
-  get logRef(){return DB.doc(`partite/${this.code}/log/${CID}`)}
+  get logRef(){return DB.doc(`partite/${this.code}/log/${wid()}`)}
   start(){
     this.timer=setTimeout(()=>{if(!this.confirmed){this.status="off";paintLive()}},10000);
     this.unsub=DB.collection(`partite/${this.code}/log`).onSnapshot(snap=>{
       const others={},devs=new Set();
       snap.docs.forEach(d=>{const v=d.data()||{};devs.add(d.id);
-        if(d.id===CID){const remote=Array.isArray(v.actions)?v.actions:[];if(remote.length>this.mine.length&&!this.writing){this.mine=remote.map(x=>({...x}));this.backup()}}
+        if(d.id===wid()){const remote=Array.isArray(v.actions)?v.actions:[];if(remote.length>this.mine.length&&!this.writing){this.mine=remote.map(x=>({...x}));this.backup()}}
         else others[d.id]=Array.isArray(v.actions)?v.actions:[]});
       this.others=others;this.devices=devs;
       if(!snap.metadata.fromCache){this.confirmed=true;clearTimeout(this.timer);if(this.status!=="pending"&&this.status!=="err")this.status="ok"}
@@ -903,18 +926,18 @@ class Live{
     paintLive();
   }
   push(a){
-    a.by=CID;a.n=(this.mine.length?this.mine[this.mine.length-1].n+1:0);this.mine.push(a);
+    a.by=wid();a.n=(this.mine.length?this.mine[this.mine.length-1].n+1:0);this.mine.push(a);
     this.backup();this.derive(false);this.flush();this.scheduleMeta();
   }
   undo(){if(!this.mine.length)return;this.mine.pop();this.backup();closeSub();this.derive(false);render();this.flush();this.scheduleMeta()}
-  backup(){ls.set("tabellino-live-log-"+this.code,this.mine)}
+  backup(){ls.set(backupKey(this.code),this.mine)}
   saveUI(){UIFIELDS.forEach(f=>this.ui[f]=S[f]);ls.set(UIKEY,{view:this.ui.view,sel:this.ui.sel,org:this.ui.org,flt:this.ui.flt})}
   async flush(){
     if(this.writing){this.dirty=true;return}
     this.writing=true;this.status="pending";paintLive();
     let ok=true;
     do{this.dirty=false;
-      try{await this.logRef.set({client:CID,actions:this.mine,updated:Date.now()})}
+      try{await this.logRef.set({client:wid(),actions:this.mine,updated:Date.now()})}
       catch(e){ok=false;this.status=e&&e.code==="quota_exceeded"?"full":"err";paintLive();
         if(e&&(e.code==="invalid_argument"||e.code==="revoked")){this.status="ro";paintLive();this.writing=false;return}
         this.writing=false;setTimeout(()=>this.flush(),4000);return}
@@ -939,7 +962,7 @@ function paintLive(){
     el.className="livepill "+({ok:"ok",pending:"pending",wait:"pending"}[LIVE.status]||"off");
     el.innerHTML=`<i></i>${LIVE.code}`;el.title=liveStatusText()});
   if($("liveSheetStatus")&&on){$("liveSheetStatus").textContent=liveStatusText();$("liveSheetCode").textContent=LIVE.code;
-    const n=new Set([...LIVE.devices,...(LIVE.mine.length?[CID]:[])]).size;
+    const n=new Set([...LIVE.devices,...(LIVE.mine.length?[wid()]:[])].map(x=>String(x).split("_")[0])).size;
     $("liveSheetDevices").textContent=n<=1?"Per ora segna solo questo telefono.":`${n} telefoni hanno segnato in questa partita.`}
   const slot=S.phase==="roster"?$("liveSlotR"):S.phase==="lineup"&&S.cur===0&&!usedIdx(liveMatch()).length?$("liveSlotL"):null;
   if(slot&&$("liveBox").parentNode!==slot)slot.appendChild($("liveBox"));$("liveBox").hidden=!slot;
@@ -982,7 +1005,7 @@ async function liveJoin(raw){
 function liveLeave(){
   if(LIVE)LIVE.stop();LIVE=null;ls.del(MODEKEY);$("liveShade").hidden=true;
   try{S=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){S=fresh()}
-  S.sel={att:"a",dif:"pa",bat:"ace",ric:"rp",...(S.sel||{})};S.org=S.org||{att:"4",dif:"4"};S.flt=S.flt||{att:"all",dif:"all"};S.hist=S.hist||[];S.view=S.view||"players";fixBat(S.sets);
+  normS();fixBat(S.sets);
   render();paintLive();scrollTo(0,0);
 }
 function showLiveErr(m){$("liveErr").textContent=m;$("liveErr").hidden=false}
@@ -1030,7 +1053,7 @@ $("archive").addEventListener("click",async e=>{
   if(e.target.closest("[data-sh-delno]")){sharedDel=null;renderShared();return}
   const y=e.target.closest("[data-sh-delyes]");if(y){const code=y.dataset.shDelyes;
     try{const q=await DB.collection(`partite/${code}/log`).get();for(const doc of q.docs)await DB.doc(`partite/${code}/log/${doc.id}`).delete();await DB.doc("partite/"+code).delete();
-      ls.del("tabellino-live-log-"+code);if(LIVE&&LIVE.code===code)liveLeave()}catch(err){}
+      try{Object.keys(localStorage).filter(k=>k.startsWith("tabellino-live-log-"+code)).forEach(k=>localStorage.removeItem(k))}catch(e){}if(LIVE&&LIVE.code===code)liveLeave()}catch(err){}
     sharedDel=null;sharedList=sharedList.filter(a=>a.code!==code);renderShared()}
 });
 
@@ -1106,6 +1129,7 @@ if(!INCLAUDE&&!ls.get(PINKEY))$("pinGate").hidden=false;
   if(saved&&saved.code){$("liveBoot").hidden=false}
   try{DB=INCLAUDE?await window.claude.use("db"):await firebaseInit()}catch(e){DB=null}
   DBREADY=true;
+  if(TABCH)await new Promise(r=>setTimeout(r,300));
   $("liveBoot").hidden=true;
   if(DB&&saved&&saved.code)liveEnter(saved.code);
   paintLive();
